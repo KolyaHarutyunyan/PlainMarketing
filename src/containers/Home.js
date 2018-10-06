@@ -18,12 +18,16 @@ export default class Home extends Component {
             const response = await axios.get('https://api.iextrading.com/1.0/ref-data/symbols');
             console.log(response.data);
 
-            const response2 = await axios.get('https://api.iextrading.com/1.0/stock/AAPL/chart/5y');
+            const response2 = await axios.get('https://api.iextrading.com/1.0/stock/INTU/chart/5y');
             console.log(response2.data);
-            console.log(returnCalculator.getDataForDates({
+            console.log(returnCalculator.calculateESPPEarnings({
                 stockData: response2.data,
                 periodStartDate: '2017-01-01',
                 periodCadenceInMonths: 3,
+                income: 100000,
+                lookback: true,
+                discount: .15,
+                contributionPercentage: .15
             }));
             this.setState({ loading: false, data: response.data });
         } catch (err) {
