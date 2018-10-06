@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "moment": "^2.22.2",
+    "ramda": "^0.25.0",
     "react": "^16.4.2",
     "react-bootstrap": "^0.32.1",
     "react-dom": "^16.4.2",
