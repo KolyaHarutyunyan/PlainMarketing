@@ -33,6 +33,7 @@ const getDataForDates = ({ stockData, periodStartDate, periodCadenceInMonths }) 
 };
 
 const SHARE_PERCENTAGE = 0.5;
+const ESPP_MAX_CONTRIB_PER_YEAR = 25000;
 
 const calculateESPPEarnings = ({
     stockData,
@@ -43,24 +44,43 @@ const calculateESPPEarnings = ({
     discount,
     contributionPercentage
 }) => {
-    const contributionPerPeriod = contributionPercentage * income / (MONTHS_IN_YEAR / periodCadenceInMonths);
+    const numberOfPeriods = MONTHS_IN_YEAR / periodCadenceInMonths;
+    const contributionPerPeriod = Math.min(
+        contributionPercentage * income / numberOfPeriods,
+        ESPP_MAX_CONTRIB_PER_YEAR / numberOfPeriods
+    );
+
     const earnings = R.map(
         ([ periodStart, periodEnd ]) => {
             const priceOfStock = periodEnd.open;
             const buyPriceOfStock = lookback ? Math.min(periodStart.open, periodEnd.open) : periodEnd.open;
 
-            const stockBought = contributionPerPeriod / ((1 - discount) * buyPriceOfStock);
+            const discountedPurchasePrice = (1 - discount) * buyPriceOfStock;
+            const stockBought = Math.floor(contributionPerPeriod / discountedPurchasePrice);
+            const moneyUsedToBuyStock = stockBought * discountedPurchasePrice;
+            const unusedMoney = contributionPerPeriod - moneyUsedToBuyStock;
             const totalSalePrice = stockBought * priceOfStock;
-            const gain = totalSalePrice - contributionPerPeriod;
+            const gain = totalSalePrice - moneyUsedToBuyStock;
+            const amountToPayBack = contributionPerPeriod + SHARE_PERCENTAGE * gain;
+            const cashInBankAfterSale = totalSalePrice + unusedMoney;
+            const moneyMadeByClient = cashInBankAfterSale - amountToPayBack;
+            const moneyMadeByCake = amountToPayBack - contributionPerPeriod;
             return {
-                contributionPerPeriod,
-                priceOfStock,
+                amountToPayBack,
                 buyPriceOfStock,
+                cashInBankAfterSale,
+                contributionPerPeriod,
+                discountedPurchasePrice,
+                gain,
+                unusedMoney,
+                moneyUsedToBuyStock,
+                moneyMadeByCake,
+                moneyMadeByClient,
+                periodEnd,
+                periodStart,
+                priceOfStock,
                 stockBought,
                 totalSalePrice,
-                gain,
-                periodStart,
-                periodEnd
             };
         },
         getDataForDates({ stockData, periodStartDate, periodCadenceInMonths })
