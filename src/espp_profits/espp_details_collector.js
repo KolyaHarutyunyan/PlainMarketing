@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import * as R from 'ramda';
-import { DatePicker, Form, Spin, Select } from 'antd';
+import { DatePicker, Form, InputNumber, Radio, Spin, Select } from 'antd';
 import axios from 'axios';
 import { STATE_MANAGERS } from '../lib/state_manager';
 
@@ -26,7 +26,14 @@ companyInfoStateManager.asyncUpdate(async () => {
     };
 });
 
-esppProfitsModelInputsStateManager.syncUpdate({ periodStartDate: moment().add(-1, 'year') });
+esppProfitsModelInputsStateManager.syncUpdate({
+    contributionPercentage: 0.10,
+    discount: 0.15,
+    lookback: true,
+    periodStartDate: moment().add(-1, 'year'),
+    periodCadenceInMonths: 6,
+    income: 60000,
+});
 
 const formItemLayout = {
     labelCol: {
@@ -107,6 +114,8 @@ export class ESPPDetailsCollector extends Component {
 
         const esppProfitsModel = R.pathOr({}, [ 'esppProfitsModel', 'data' ], this.state);
 
+        console.log(esppProfitsModel);
+
         return (
             <div className='espp-details-collector-container'>
                 <h1>COLLECTOR!!!</h1>
@@ -116,7 +125,7 @@ export class ESPPDetailsCollector extends Component {
                             {...formItemLayout}
                             label={ 'Company' }
                             validateStatus={ !esppProfitsModel.company ? 'error' : 'success' }
-                            help={ !esppProfitsModel.company ? 'Please select a company' : null }
+                            help={ !esppProfitsModel.company ? 'Please select a company' : '' }
                         >
                             { this.renderCompanySelect() }
                         </Form.Item>
@@ -124,7 +133,7 @@ export class ESPPDetailsCollector extends Component {
                             {...formItemLayout}
                             label={ 'Period Start Date' }
                             validateStatus={ !esppProfitsModel.periodStartDate ? 'error' : 'success' }
-                            help={ !esppProfitsModel.periodStartDate ? 'Please select the period start date' : null }
+                            help={ !esppProfitsModel.periodStartDate ? 'Please select the period start date' : '' }
                         >
                             <DatePicker
                                 defaultValue={ esppProfitsModel.periodStartDate }
@@ -134,6 +143,98 @@ export class ESPPDetailsCollector extends Component {
                                 onChange={
                                     (periodStartDate) => esppProfitsModelInputsStateManager.syncUpdate({ periodStartDate })
                                 }
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            {...formItemLayout}
+                            label={ 'Yearly Income' }
+                            validateStatus={ esppProfitsModel.income === undefined ? 'error' : 'success' }
+                            help={ esppProfitsModel.income === undefined ? 'Please enter your yearly income' : null }
+                        >
+                            <InputNumber
+                                value={ esppProfitsModel.income }
+                                formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                min={0}
+                                max={1000000}
+                                onChange={
+                                    (income) => esppProfitsModelInputsStateManager.syncUpdate({ income })
+                                }
+                                parser={value => value.replace(/\$\s?|(,*)/g, '')}
+                                style={{ minWidth: '120px' }}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            {...formItemLayout}
+                            label={ 'Lookback' }
+                        >
+                            <Radio.Group
+                                defaultValue={ `${esppProfitsModel.lookback}` }
+                                onChange={
+                                    ({ target: { value } }) => esppProfitsModelInputsStateManager.syncUpdate({ lookback: value === 'true' })
+                                }
+                            >
+                                <Radio.Button value='true'>YES</Radio.Button>
+                                <Radio.Button value='false'>NO</Radio.Button>
+                            </Radio.Group>
+                        </Form.Item>
+                        <Form.Item
+                            {...formItemLayout}
+                            label={ 'Period Cadence' }
+                        >
+                            <Radio.Group
+                                defaultValue={ `${esppProfitsModel.periodCadenceInMonths}` }
+                                onChange={
+                                    ({ target: { value } }) => esppProfitsModelInputsStateManager.syncUpdate({ periodCadenceInMonths: parseInt(value) })
+                                }
+                            >
+                                <Radio.Button value='1'>1 Month</Radio.Button>
+                                <Radio.Button value='3'>3 Months</Radio.Button>
+                                <Radio.Button value='6'>6 Months</Radio.Button>
+                                <Radio.Button value='12'>12 Months</Radio.Button>
+                            </Radio.Group>
+                        </Form.Item>
+                        <Form.Item
+                            {...formItemLayout}
+                            label={ 'ESPP Discount' }
+                            validateStatus={ esppProfitsModel.discount === undefined ? 'error' : 'success' }
+                            help={ esppProfitsModel.discount === undefined ? 'Please enter your ESPP plan discount' : null }
+                        >
+                            <InputNumber
+                                value={ esppProfitsModel.discount * 100 }
+                                formatter={value => `${value}%`}
+                                min={0}
+                                max={25}
+                                onChange={
+                                    (discount) => {
+                                        if (discount !== undefined) {
+                                            esppProfitsModelInputsStateManager.syncUpdate({ discount: discount / 100 })
+                                        }
+                                    }
+                                }
+                                parser={value => value.replace('%', '')}
+                                style={{ minWidth: '120px' }}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            {...formItemLayout}
+                            label={ 'Max Contribution Percentage' }
+                            validateStatus={ esppProfitsModel.contributionPercentage === undefined ? 'error' : 'success' }
+                            help={ esppProfitsModel.contributionPercentage === undefined ? 'Please enter your ESPP plan discount' : null }
+                        >
+                            <InputNumber
+                                value={ esppProfitsModel.contributionPercentage * 100 }
+                                formatter={value => `${value}%`}
+                                min={0}
+                                max={25}
+                                onChange={
+                                    (contributionPercentage) => {
+                                        if (contributionPercentage !== undefined) {
+                                            esppProfitsModelInputsStateManager.syncUpdate({ contributionPercentage: contributionPercentage / 100 })
+                                        }
+                                    }
+                                }
+                                parser={value => value.replace('%', '')}
+                                style={{ minWidth: '120px' }}
                             />
                         </Form.Item>
                     </Form>
