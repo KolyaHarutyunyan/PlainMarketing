@@ -1,0 +1,7 @@
+.espp-details-collector-container .ant-input-number-handler-wrap {
+    display: none;
+}
+
+.espp-details-collector-container .ant-input-number-input {
+    text-align: right;
+}

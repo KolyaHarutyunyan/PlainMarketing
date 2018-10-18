@@ -6,6 +6,9 @@ import axios from 'axios';
 import { STATE_MANAGERS } from '../lib/state_manager';
 
 import filter from './filter';
+import './espp_details_collector.css';
+
+// https://hooks.zapier.com/hooks/catch/403974/lpw5s0/
 
 const {
     COMPANY_INFO: companyInfoStateManager,
@@ -30,7 +33,7 @@ esppProfitsModelInputsStateManager.syncUpdate({
     contributionPercentage: 0.10,
     discount: 0.15,
     lookback: true,
-    periodStartDate: moment().add(-1, 'year'),
+    periodStartDate: moment(),
     periodCadenceInMonths: 6,
     income: 60000,
 });
@@ -105,6 +108,17 @@ export class ESPPDetailsCollector extends Component {
         </Select>;
     }
 
+    selectAllOnFocus(event) {
+        const input = event.target;
+        setTimeout(
+            () => {
+                input.focus();
+                input.setSelectionRange(0, input.value.length);
+            },
+            0
+        );
+    }
+
     render() {
         const loadingCompanyInfo = R.pathOr(
             true,
@@ -137,7 +151,7 @@ export class ESPPDetailsCollector extends Component {
                         >
                             <DatePicker
                                 defaultValue={ esppProfitsModel.periodStartDate }
-                                disabledDate={(c) =>  c > moment().add(-1, 'year') }
+                                disabledDate={(c) => c > moment() }
                                 format={ 'MMM DD, YYYY' }
                                 showToday={ false }
                                 onChange={
@@ -159,6 +173,7 @@ export class ESPPDetailsCollector extends Component {
                                 onChange={
                                     (income) => esppProfitsModelInputsStateManager.syncUpdate({ income })
                                 }
+                                onFocus={this.selectAllOnFocus}
                                 parser={value => value.replace(/\$\s?|(,*)/g, '')}
                                 style={{ minWidth: '120px' }}
                             />
@@ -211,6 +226,7 @@ export class ESPPDetailsCollector extends Component {
                                         }
                                     }
                                 }
+                                onFocus={this.selectAllOnFocus}
                                 parser={value => value.replace('%', '')}
                                 style={{ minWidth: '120px' }}
                             />
@@ -233,6 +249,7 @@ export class ESPPDetailsCollector extends Component {
                                         }
                                     }
                                 }
+                                onFocus={this.selectAllOnFocus}
                                 parser={value => value.replace('%', '')}
                                 style={{ minWidth: '120px' }}
                             />
