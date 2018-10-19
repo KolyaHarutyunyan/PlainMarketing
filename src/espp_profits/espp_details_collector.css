@@ -5,3 +5,8 @@
 .espp-details-collector-container .ant-input-number-input {
     text-align: right;
 }
+
+.espp-details-collector-container .ant-form {
+    max-width: 500px;
+    margin: 0 auto;
+}

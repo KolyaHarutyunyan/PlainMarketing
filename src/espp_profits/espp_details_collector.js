@@ -1,7 +1,18 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import * as R from 'ramda';
-import { Button, DatePicker, Form, Input, InputNumber, Radio, Spin, Select } from 'antd';
+import {
+    Button,
+    Col,
+    DatePicker,
+    Form,
+    Input,
+    InputNumber,
+    Radio,
+    Row,
+    Spin,
+    Select
+} from 'antd';
 import axios from 'axios';
 import validator from 'validator';
 import { STATE_MANAGERS } from '../lib/state_manager';
@@ -42,7 +53,9 @@ esppProfitsModelInputsStateManager.syncUpdate({
     periodCadenceInMonths: 6,
 });
 
-const formItemLayout = {
+const formItemLayout = null;
+
+/*{
     labelCol: {
         xs: { span: 24 },
         sm: { span: 5 },
@@ -52,6 +65,7 @@ const formItemLayout = {
         sm: { span: 12 },
     },
 };
+*/
 
 export class ESPPDetailsCollector extends Component {
     constructor(props) {
@@ -155,156 +169,167 @@ export class ESPPDetailsCollector extends Component {
             <div className='espp-details-collector-container'>
                 <h1>COLLECTOR!!!</h1>
                 <Spin spinning={ loadingCompanyInfo }>
-                    <Form>
-                        <Form.Item
-                            {...formItemLayout}
-                            label={ 'Email' }
-                            validateStatus={ profitsModelValidation.email ? 'success' : 'error' }
-                            help={ profitsModelValidation.email ? '' : 'Please input a valid email' }
-                        >
-                            <Input
-                                value={ esppProfitsModel.email }
-                                onChange={
-                                    (event) => {
-                                        const email = event.target.value || '';
-                                        esppProfitsModelInputsStateManager.syncUpdate({ email });
-                                    }
-                                }
-                                onFocus={this.selectAllOnFocus}
-                                style={{ minWidth: '120px' }}
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            {...formItemLayout}
-                            label={ 'Period Start Date' }
-                            validateStatus={ profitsModelValidation.periodStartDate ? 'success' : 'error' }
-                            help={ profitsModelValidation.periodStartDate ? '' : 'Please select the period start date' }
-                        >
-                            <DatePicker
-                                defaultValue={ esppProfitsModel.periodStartDate }
-                                disabledDate={(c) => c > moment() }
-                                format={ 'MMM DD, YYYY' }
-                                showToday={ false }
-                                onChange={
-                                    (periodStartDate) => esppProfitsModelInputsStateManager.syncUpdate({ periodStartDate })
-                                }
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            {...formItemLayout}
-                            label={ 'Company' }
-                            validateStatus={ profitsModelValidation.company ? 'success' : 'error' }
-                            help={ profitsModelValidation.company ? '' : 'Please select a company' }
-                        >
-                            { this.renderCompanySelect() }
-                        </Form.Item>
-                        <Form.Item
-                            {...formItemLayout}
-                            label={ 'Yearly Income' }
-                            validateStatus={ profitsModelValidation.income ? 'success' : 'error' }
-                            help={ profitsModelValidation.income ? '' : 'Please enter your yearly income' }
-                        >
-                            <InputNumber
-                                value={ esppProfitsModel.income }
-                                formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                min={0}
-                                max={1000000}
-                                onChange={
-                                    (income) => esppProfitsModelInputsStateManager.syncUpdate({ income })
-                                }
-                                onFocus={this.selectAllOnFocus}
-                                parser={value => value.replace(/\$\s?|(,*)/g, '')}
-                                style={{ minWidth: '120px' }}
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            {...formItemLayout}
-                            label={ 'Lookback' }
-                        >
-                            <Radio.Group
-                                defaultValue={ `${esppProfitsModel.lookback}` }
-                                onChange={
-                                    ({ target: { value } }) => esppProfitsModelInputsStateManager.syncUpdate({ lookback: value === 'true' })
-                                }
-                            >
-                                <Radio.Button value='true'>YES</Radio.Button>
-                                <Radio.Button value='false'>NO</Radio.Button>
-                            </Radio.Group>
-                        </Form.Item>
-                        <Form.Item
-                            {...formItemLayout}
-                            label={ 'Period Cadence' }
-                        >
-                            <Radio.Group
-                                defaultValue={ `${esppProfitsModel.periodCadenceInMonths}` }
-                                onChange={
-                                    ({ target: { value } }) => esppProfitsModelInputsStateManager.syncUpdate({ periodCadenceInMonths: parseInt(value) })
-                                }
-                            >
-                                <Radio.Button value='1'>1 Month</Radio.Button>
-                                <Radio.Button value='3'>3 Months</Radio.Button>
-                                <Radio.Button value='6'>6 Months</Radio.Button>
-                                <Radio.Button value='12'>12 Months</Radio.Button>
-                            </Radio.Group>
-                        </Form.Item>
-                        <Form.Item
-                            {...formItemLayout}
-                            label={ 'ESPP Discount' }
-                            validateStatus={ profitsModelValidation.discount ? 'success' : 'error' }
-                            help={ profitsModelValidation.discount ? '' : 'Please enter your ESPP plan discount' }
-                        >
-                            <InputNumber
-                                value={ esppProfitsModel.discount * 100 }
-                                formatter={value => `${Math.floor(value)}%`}
-                                min={0}
-                                max={25}
-                                onChange={
-                                    (discount) => {
-                                        if (discount !== undefined) {
-                                            esppProfitsModelInputsStateManager.syncUpdate({ discount: Math.floor(discount) / 100 });
+                    <Row type="flex" justify="center">
+                        <Col span={20}>
+                            <Form layout='vertical'>
+                                <Form.Item
+                                    {...formItemLayout}
+                                    label={ 'Email' }
+                                    validateStatus={ profitsModelValidation.email ? 'success' : 'error' }
+                                    help={ profitsModelValidation.email ? '' : 'Please input a valid email' }
+                                >
+                                    <Input
+                                        value={ esppProfitsModel.email }
+                                        onChange={
+                                            (event) => {
+                                                const email = event.target.value || '';
+                                                esppProfitsModelInputsStateManager.syncUpdate({ email });
+                                            }
                                         }
-                                    }
-                                }
-                                onFocus={this.selectAllOnFocus}
-                                parser={value => value.replace('%', '')}
-                                style={{ minWidth: '120px' }}
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            {...formItemLayout}
-                            label={ 'Max Contribution Percentage' }
-                            validateStatus={ profitsModelValidation.contributionPercentage ? 'success' : 'error' }
-                            help={ profitsModelValidation.contributionPercentage ? '' : 'Please enter your ESPP plan discount' }
-                        >
-                            <InputNumber
-                                value={ esppProfitsModel.contributionPercentage * 100 }
-                                formatter={value => `${Math.floor(value)}%`}
-                                min={0}
-                                max={25}
-                                onChange={
-                                    (contributionPercentage) => {
-                                        if (contributionPercentage !== undefined) {
-                                            esppProfitsModelInputsStateManager.syncUpdate({ contributionPercentage: Math.floor(contributionPercentage) / 100 });
+                                        onFocus={this.selectAllOnFocus}
+                                        style={{ minWidth: '120px' }}
+                                    />
+                                </Form.Item>
+                                <Form.Item
+                                    {...formItemLayout}
+                                    label={ 'Period Start Date' }
+                                    validateStatus={ profitsModelValidation.periodStartDate ? 'success' : 'error' }
+                                    help={ profitsModelValidation.periodStartDate ? '' : 'Please select the period start date' }
+                                >
+                                    <DatePicker
+                                        defaultValue={ esppProfitsModel.periodStartDate }
+                                        disabledDate={(c) => c > moment() }
+                                        format={ 'MMM DD, YYYY' }
+                                        showToday={ false }
+                                        onChange={
+                                            (periodStartDate) => esppProfitsModelInputsStateManager.syncUpdate({ periodStartDate })
                                         }
-                                    }
-                                }
-                                onFocus={this.selectAllOnFocus}
-                                parser={value => value.replace('%', '')}
-                                style={{ minWidth: '120px' }}
-                            />
-                        </Form.Item>
-                        <Button
-                            disabled={ R.any(R.equals(false), R.values(profitsModelValidation)) }
-                            onClick={() => {
-                                axios.post(
-                                    config.apiGateway.proxyZapierWebhookURL,
-                                    { zapierWebhookId: ZAPIER_WEBHOOK_ID, zapierPostBody: esppProfitsModel }
-                                );
-                            }}
-                        >
-                            Send
-                        </Button>
-                    </Form>
+                                    />
+                                </Form.Item>
+                                <Form.Item
+                                    {...formItemLayout}
+                                    label={ 'Company' }
+                                    validateStatus={ profitsModelValidation.company ? 'success' : 'error' }
+                                    help={ profitsModelValidation.company ? '' : 'Please select a company' }
+                                >
+                                    { this.renderCompanySelect() }
+                                </Form.Item>
+                                <Form.Item
+                                    {...formItemLayout}
+                                    label={ 'Yearly Income' }
+                                    validateStatus={ profitsModelValidation.income ? 'success' : 'error' }
+                                    help={ profitsModelValidation.income ? '' : 'Please enter your yearly income' }
+                                >
+                                    <InputNumber
+                                        value={ esppProfitsModel.income }
+                                        formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                        min={0}
+                                        max={1000000}
+                                        onChange={
+                                            (income) => esppProfitsModelInputsStateManager.syncUpdate({ income })
+                                        }
+                                        onFocus={this.selectAllOnFocus}
+                                        parser={value => value.replace(/\$\s?|(,*)/g, '')}
+                                        style={{ minWidth: '120px' }}
+                                    />
+                                </Form.Item>
+                                <Form.Item
+                                    {...formItemLayout}
+                                    label={ 'Lookback' }
+                                >
+                                    <Radio.Group
+                                        defaultValue={ `${esppProfitsModel.lookback}` }
+                                        onChange={
+                                            ({ target: { value } }) => esppProfitsModelInputsStateManager.syncUpdate({ lookback: value === 'true' })
+                                        }
+                                    >
+                                        <Radio.Button value='true'>YES</Radio.Button>
+                                        <Radio.Button value='false'>NO</Radio.Button>
+                                    </Radio.Group>
+                                </Form.Item>
+                                <Form.Item
+                                    {...formItemLayout}
+                                    label={ 'Period Cadence' }
+                                >
+                                    <Radio.Group
+                                        defaultValue={ `${esppProfitsModel.periodCadenceInMonths}` }
+                                        onChange={
+                                            ({ target: { value } }) => esppProfitsModelInputsStateManager.syncUpdate({ periodCadenceInMonths: parseInt(value) })
+                                        }
+                                    >
+                                        <Radio.Button value='1'>1 Month</Radio.Button>
+                                        <Radio.Button value='3'>3 Months</Radio.Button>
+                                        <Radio.Button value='6'>6 Months</Radio.Button>
+                                        <Radio.Button value='12'>12 Months</Radio.Button>
+                                    </Radio.Group>
+                                </Form.Item>
+                                <Form.Item
+                                    {...formItemLayout}
+                                    label={ 'ESPP Discount' }
+                                    validateStatus={ profitsModelValidation.discount ? 'success' : 'error' }
+                                    help={ profitsModelValidation.discount ? '' : 'Please enter your ESPP plan discount' }
+                                >
+                                    <InputNumber
+                                        value={ esppProfitsModel.discount * 100 }
+                                        formatter={value => `${Math.floor(value)}%`}
+                                        min={0}
+                                        max={25}
+                                        onChange={
+                                            (discount) => {
+                                                if (discount !== undefined) {
+                                                    esppProfitsModelInputsStateManager.syncUpdate({ discount: Math.floor(discount) / 100 });
+                                                }
+                                            }
+                                        }
+                                        onFocus={this.selectAllOnFocus}
+                                        parser={value => value.replace('%', '')}
+                                        style={{ minWidth: '120px' }}
+                                    />
+                                </Form.Item>
+                                <Form.Item
+                                    {...formItemLayout}
+                                    label={ 'Max Contribution Percentage' }
+                                    validateStatus={ profitsModelValidation.contributionPercentage ? 'success' : 'error' }
+                                    help={ profitsModelValidation.contributionPercentage ? '' : 'Please enter your ESPP plan discount' }
+                                >
+                                    <InputNumber
+                                        value={ esppProfitsModel.contributionPercentage * 100 }
+                                        formatter={value => `${Math.floor(value)}%`}
+                                        min={0}
+                                        max={25}
+                                        onChange={
+                                            (contributionPercentage) => {
+                                                if (contributionPercentage !== undefined) {
+                                                    esppProfitsModelInputsStateManager.syncUpdate({ contributionPercentage: Math.floor(contributionPercentage) / 100 });
+                                                }
+                                            }
+                                        }
+                                        onFocus={this.selectAllOnFocus}
+                                        parser={value => value.replace('%', '')}
+                                        style={{ minWidth: '120px' }}
+                                    />
+                                </Form.Item>
+                                <Row>
+                                    <Col span={12} offset={6}>
+                                        <Button
+                                            block
+                                            disabled={ R.any(R.equals(false), R.values(profitsModelValidation)) }
+                                            onClick={() => {
+                                                axios.post(
+                                                    config.apiGateway.proxyZapierWebhookURL,
+                                                    { zapierWebhookId: ZAPIER_WEBHOOK_ID, zapierPostBody: esppProfitsModel }
+                                                );
+                                            }}
+                                            size='large'
+                                            type='primary'
+                                        >
+                                            Let's go!
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </Form>
+                        </Col>
+                    </Row>
                 </Spin>
             </div>
         );
