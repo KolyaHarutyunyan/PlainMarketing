@@ -8,8 +8,9 @@ import { STATE_MANAGERS } from '../lib/state_manager';
 
 import filter from './filter';
 import './espp_details_collector.css';
+import config from '../config';
 
-const ZAPIER_WEBHOOK_URL = 'https://hooks.zapier.com/hooks/catch/403974/lpw5s0/';
+const ZAPIER_WEBHOOK_ID = '403974/lpw5s0';
 
 const {
     COMPANY_INFO: companyInfoStateManager,
@@ -32,6 +33,7 @@ companyInfoStateManager.asyncUpdate(async () => {
 
 esppProfitsModelInputsStateManager.syncUpdate({
     contributionPercentage: 0.10,
+    company: undefined,
     email: '',
     discount: 0.15,
     income: 60000,
@@ -121,6 +123,22 @@ export class ESPPDetailsCollector extends Component {
         );
     }
 
+    validateProfitsModel(esppProfitsModel) {
+        return R.evolve(
+            {
+                contributionPercentage: R.complement(R.isNil),
+                company: R.complement(R.isNil),
+                email: validator.isEmail,
+                discount: R.complement(R.isNil),
+                income: R.complement(R.isNil),
+                lookback: R.complement(R.isNil),
+                periodCadenceInMonths: R.complement(R.isNil),
+                periodStartDate: R.complement(R.isNil),
+            },
+            esppProfitsModel
+        );
+    }
+
     render() {
         const loadingCompanyInfo = R.pathOr(
             true,
@@ -129,6 +147,7 @@ export class ESPPDetailsCollector extends Component {
         );
 
         const esppProfitsModel = R.pathOr({}, [ 'esppProfitsModel', 'data' ], this.state);
+        const profitsModelValidation = this.validateProfitsModel(esppProfitsModel);
 
         console.log(esppProfitsModel);
 
@@ -140,8 +159,8 @@ export class ESPPDetailsCollector extends Component {
                         <Form.Item
                             {...formItemLayout}
                             label={ 'Email' }
-                            validateStatus={ validator.isEmail(esppProfitsModel.email) ? 'success' : 'error' }
-                            help={ validator.isEmail(esppProfitsModel.email) ? '' : 'Please input a valid email' }
+                            validateStatus={ profitsModelValidation.email ? 'success' : 'error' }
+                            help={ profitsModelValidation.email ? '' : 'Please input a valid email' }
                         >
                             <Input
                                 value={ esppProfitsModel.email }
@@ -158,8 +177,8 @@ export class ESPPDetailsCollector extends Component {
                         <Form.Item
                             {...formItemLayout}
                             label={ 'Period Start Date' }
-                            validateStatus={ !esppProfitsModel.periodStartDate ? 'error' : 'success' }
-                            help={ !esppProfitsModel.periodStartDate ? 'Please select the period start date' : '' }
+                            validateStatus={ profitsModelValidation.periodStartDate ? 'success' : 'error' }
+                            help={ profitsModelValidation.periodStartDate ? '' : 'Please select the period start date' }
                         >
                             <DatePicker
                                 defaultValue={ esppProfitsModel.periodStartDate }
@@ -174,32 +193,16 @@ export class ESPPDetailsCollector extends Component {
                         <Form.Item
                             {...formItemLayout}
                             label={ 'Company' }
-                            validateStatus={ !esppProfitsModel.company ? 'error' : 'success' }
-                            help={ !esppProfitsModel.company ? 'Please select a company' : '' }
+                            validateStatus={ profitsModelValidation.company ? 'success' : 'error' }
+                            help={ profitsModelValidation.company ? '' : 'Please select a company' }
                         >
                             { this.renderCompanySelect() }
                         </Form.Item>
                         <Form.Item
                             {...formItemLayout}
-                            label={ 'Period Start Date' }
-                            validateStatus={ !esppProfitsModel.periodStartDate ? 'error' : 'success' }
-                            help={ !esppProfitsModel.periodStartDate ? 'Please select the period start date' : '' }
-                        >
-                            <DatePicker
-                                defaultValue={ esppProfitsModel.periodStartDate }
-                                disabledDate={(c) => c > moment() }
-                                format={ 'MMM DD, YYYY' }
-                                showToday={ false }
-                                onChange={
-                                    (periodStartDate) => esppProfitsModelInputsStateManager.syncUpdate({ periodStartDate })
-                                }
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            {...formItemLayout}
                             label={ 'Yearly Income' }
-                            validateStatus={ esppProfitsModel.income === undefined ? 'error' : 'success' }
-                            help={ esppProfitsModel.income === undefined ? 'Please enter your yearly income' : null }
+                            validateStatus={ profitsModelValidation.income ? 'success' : 'error' }
+                            help={ profitsModelValidation.income ? '' : 'Please enter your yearly income' }
                         >
                             <InputNumber
                                 value={ esppProfitsModel.income }
@@ -247,18 +250,18 @@ export class ESPPDetailsCollector extends Component {
                         <Form.Item
                             {...formItemLayout}
                             label={ 'ESPP Discount' }
-                            validateStatus={ esppProfitsModel.discount === undefined ? 'error' : 'success' }
-                            help={ esppProfitsModel.discount === undefined ? 'Please enter your ESPP plan discount' : null }
+                            validateStatus={ profitsModelValidation.discount ? 'success' : 'error' }
+                            help={ profitsModelValidation.discount ? '' : 'Please enter your ESPP plan discount' }
                         >
                             <InputNumber
                                 value={ esppProfitsModel.discount * 100 }
-                                formatter={value => `${value}%`}
+                                formatter={value => `${Math.floor(value)}%`}
                                 min={0}
                                 max={25}
                                 onChange={
                                     (discount) => {
                                         if (discount !== undefined) {
-                                            esppProfitsModelInputsStateManager.syncUpdate({ discount: discount / 100 })
+                                            esppProfitsModelInputsStateManager.syncUpdate({ discount: Math.floor(discount) / 100 });
                                         }
                                     }
                                 }
@@ -270,18 +273,18 @@ export class ESPPDetailsCollector extends Component {
                         <Form.Item
                             {...formItemLayout}
                             label={ 'Max Contribution Percentage' }
-                            validateStatus={ esppProfitsModel.contributionPercentage === undefined ? 'error' : 'success' }
-                            help={ esppProfitsModel.contributionPercentage === undefined ? 'Please enter your ESPP plan discount' : null }
+                            validateStatus={ profitsModelValidation.contributionPercentage ? 'success' : 'error' }
+                            help={ profitsModelValidation.contributionPercentage ? '' : 'Please enter your ESPP plan discount' }
                         >
                             <InputNumber
                                 value={ esppProfitsModel.contributionPercentage * 100 }
-                                formatter={value => `${value}%`}
+                                formatter={value => `${Math.floor(value)}%`}
                                 min={0}
                                 max={25}
                                 onChange={
                                     (contributionPercentage) => {
                                         if (contributionPercentage !== undefined) {
-                                            esppProfitsModelInputsStateManager.syncUpdate({ contributionPercentage: contributionPercentage / 100 })
+                                            esppProfitsModelInputsStateManager.syncUpdate({ contributionPercentage: Math.floor(contributionPercentage) / 100 });
                                         }
                                     }
                                 }
@@ -291,8 +294,12 @@ export class ESPPDetailsCollector extends Component {
                             />
                         </Form.Item>
                         <Button
+                            disabled={ R.any(R.equals(false), R.values(profitsModelValidation)) }
                             onClick={() => {
-                                axios.get(ZAPIER_WEBHOOK_URL, { params: esppProfitsModel });
+                                axios.post(
+                                    config.apiGateway.proxyZapierWebhookURL,
+                                    { zapierWebhookId: ZAPIER_WEBHOOK_ID, zapierPostBody: esppProfitsModel }
+                                );
                             }}
                         >
                             Send
