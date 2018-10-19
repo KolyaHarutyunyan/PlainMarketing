@@ -20,6 +20,7 @@ import { STATE_MANAGERS } from '../lib/state_manager';
 import filter from './filter';
 import './espp_details_collector.css';
 import config from '../config';
+import { formatDollars } from '../lib/helpers';
 
 const ZAPIER_WEBHOOK_ID = '403974/lpw5s0';
 
@@ -70,6 +71,11 @@ export class ESPPDetailsCollector extends Component {
         this.esppProfitsModelUnsub = esppProfitsModelInputsStateManager.subscribe((esppProfitsModel) => {
             this.setState({ esppProfitsModel });
         });
+    }
+
+    componentWillUnmount() {
+        this.companyInfoUnsub();
+        this.esppProfitsModelUnsub();
     }
 
     renderCompanySelect() {
@@ -200,7 +206,7 @@ export class ESPPDetailsCollector extends Component {
                                 >
                                     <InputNumber
                                         value={ esppProfitsModel.income }
-                                        formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                        formatter={(value) => formatDollars(parseFloat(value))}
                                         min={0}
                                         max={1000000}
                                         onChange={
@@ -293,6 +299,8 @@ export class ESPPDetailsCollector extends Component {
                                                     config.apiGateway.proxyZapierWebhookURL,
                                                     { zapierWebhookId: ZAPIER_WEBHOOK_ID, zapierPostBody: esppProfitsModel }
                                                 );
+
+                                                this.props.doneCollectingData();
                                             }}
                                             size='large'
                                             type='primary'

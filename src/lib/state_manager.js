@@ -67,4 +67,5 @@ const createSimpleStateManager = () => {
 export const STATE_MANAGERS = {
     COMPANY_INFO: createSimpleStateManager(),
     ESPP_PROFITS_MODEL_INPUTS: createSimpleStateManager(),
+    STOCK_DATA: createSimpleStateManager(),
 };
