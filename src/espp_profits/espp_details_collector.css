@@ -9,4 +9,6 @@
 .espp-details-collector-container .ant-form {
     max-width: 500px;
     margin: 0 auto;
+    box-shadow: 0 2px 6px 0 rgba(0,0,0,.5);
+    padding: 30px;
 }

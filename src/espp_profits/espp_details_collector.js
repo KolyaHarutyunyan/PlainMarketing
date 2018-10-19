@@ -52,21 +52,6 @@ esppProfitsModelInputsStateManager.syncUpdate({
     periodStartDate: moment(),
     periodCadenceInMonths: 6,
 });
-
-const formItemLayout = null;
-
-/*{
-    labelCol: {
-        xs: { span: 24 },
-        sm: { span: 5 },
-    },
-    wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 12 },
-    },
-};
-*/
-
 export class ESPPDetailsCollector extends Component {
     constructor(props) {
         super(props);
@@ -163,17 +148,13 @@ export class ESPPDetailsCollector extends Component {
         const esppProfitsModel = R.pathOr({}, [ 'esppProfitsModel', 'data' ], this.state);
         const profitsModelValidation = this.validateProfitsModel(esppProfitsModel);
 
-        console.log(esppProfitsModel);
-
         return (
             <div className='espp-details-collector-container'>
-                <h1>COLLECTOR!!!</h1>
                 <Spin spinning={ loadingCompanyInfo }>
-                    <Row type="flex" justify="center">
+                    <Row type='flex' justify='center'>
                         <Col span={20}>
                             <Form layout='vertical'>
                                 <Form.Item
-                                    {...formItemLayout}
                                     label={ 'Email' }
                                     validateStatus={ profitsModelValidation.email ? 'success' : 'error' }
                                     help={ profitsModelValidation.email ? '' : 'Please input a valid email' }
@@ -191,7 +172,6 @@ export class ESPPDetailsCollector extends Component {
                                     />
                                 </Form.Item>
                                 <Form.Item
-                                    {...formItemLayout}
                                     label={ 'Period Start Date' }
                                     validateStatus={ profitsModelValidation.periodStartDate ? 'success' : 'error' }
                                     help={ profitsModelValidation.periodStartDate ? '' : 'Please select the period start date' }
@@ -207,7 +187,6 @@ export class ESPPDetailsCollector extends Component {
                                     />
                                 </Form.Item>
                                 <Form.Item
-                                    {...formItemLayout}
                                     label={ 'Company' }
                                     validateStatus={ profitsModelValidation.company ? 'success' : 'error' }
                                     help={ profitsModelValidation.company ? '' : 'Please select a company' }
@@ -215,7 +194,6 @@ export class ESPPDetailsCollector extends Component {
                                     { this.renderCompanySelect() }
                                 </Form.Item>
                                 <Form.Item
-                                    {...formItemLayout}
                                     label={ 'Yearly Income' }
                                     validateStatus={ profitsModelValidation.income ? 'success' : 'error' }
                                     help={ profitsModelValidation.income ? '' : 'Please enter your yearly income' }
@@ -234,7 +212,6 @@ export class ESPPDetailsCollector extends Component {
                                     />
                                 </Form.Item>
                                 <Form.Item
-                                    {...formItemLayout}
                                     label={ 'Lookback' }
                                 >
                                     <Radio.Group
@@ -248,7 +225,6 @@ export class ESPPDetailsCollector extends Component {
                                     </Radio.Group>
                                 </Form.Item>
                                 <Form.Item
-                                    {...formItemLayout}
                                     label={ 'Period Cadence' }
                                 >
                                     <Radio.Group
@@ -264,7 +240,6 @@ export class ESPPDetailsCollector extends Component {
                                     </Radio.Group>
                                 </Form.Item>
                                 <Form.Item
-                                    {...formItemLayout}
                                     label={ 'ESPP Discount' }
                                     validateStatus={ profitsModelValidation.discount ? 'success' : 'error' }
                                     help={ profitsModelValidation.discount ? '' : 'Please enter your ESPP plan discount' }
@@ -287,7 +262,6 @@ export class ESPPDetailsCollector extends Component {
                                     />
                                 </Form.Item>
                                 <Form.Item
-                                    {...formItemLayout}
                                     label={ 'Max Contribution Percentage' }
                                     validateStatus={ profitsModelValidation.contributionPercentage ? 'success' : 'error' }
                                     help={ profitsModelValidation.contributionPercentage ? '' : 'Please enter your ESPP plan discount' }
@@ -323,7 +297,7 @@ export class ESPPDetailsCollector extends Component {
                                             size='large'
                                             type='primary'
                                         >
-                                            Let's go!
+                                            { 'Let\'s go!' }
                                         </Button>
                                     </Col>
                                 </Row>
