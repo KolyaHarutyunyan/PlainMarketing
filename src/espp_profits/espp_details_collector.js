@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import * as R from 'ramda';
-import { DatePicker, Form, InputNumber, Radio, Spin, Select } from 'antd';
+import { Button, DatePicker, Form, Input, InputNumber, Radio, Spin, Select } from 'antd';
 import axios from 'axios';
+import validator from 'validator';
 import { STATE_MANAGERS } from '../lib/state_manager';
 
 import filter from './filter';
 import './espp_details_collector.css';
 
-// https://hooks.zapier.com/hooks/catch/403974/lpw5s0/
+const ZAPIER_WEBHOOK_URL = 'https://hooks.zapier.com/hooks/catch/403974/lpw5s0/';
 
 const {
     COMPANY_INFO: companyInfoStateManager,
@@ -31,11 +32,12 @@ companyInfoStateManager.asyncUpdate(async () => {
 
 esppProfitsModelInputsStateManager.syncUpdate({
     contributionPercentage: 0.10,
+    email: '',
     discount: 0.15,
+    income: 60000,
     lookback: true,
     periodStartDate: moment(),
     periodCadenceInMonths: 6,
-    income: 60000,
 });
 
 const formItemLayout = {
@@ -135,6 +137,40 @@ export class ESPPDetailsCollector extends Component {
                 <h1>COLLECTOR!!!</h1>
                 <Spin spinning={ loadingCompanyInfo }>
                     <Form>
+                        <Form.Item
+                            {...formItemLayout}
+                            label={ 'Email' }
+                            validateStatus={ validator.isEmail(esppProfitsModel.email) ? 'success' : 'error' }
+                            help={ validator.isEmail(esppProfitsModel.email) ? '' : 'Please input a valid email' }
+                        >
+                            <Input
+                                value={ esppProfitsModel.email }
+                                onChange={
+                                    (event) => {
+                                        const email = event.target.value || '';
+                                        esppProfitsModelInputsStateManager.syncUpdate({ email });
+                                    }
+                                }
+                                onFocus={this.selectAllOnFocus}
+                                style={{ minWidth: '120px' }}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            {...formItemLayout}
+                            label={ 'Period Start Date' }
+                            validateStatus={ !esppProfitsModel.periodStartDate ? 'error' : 'success' }
+                            help={ !esppProfitsModel.periodStartDate ? 'Please select the period start date' : '' }
+                        >
+                            <DatePicker
+                                defaultValue={ esppProfitsModel.periodStartDate }
+                                disabledDate={(c) => c > moment() }
+                                format={ 'MMM DD, YYYY' }
+                                showToday={ false }
+                                onChange={
+                                    (periodStartDate) => esppProfitsModelInputsStateManager.syncUpdate({ periodStartDate })
+                                }
+                            />
+                        </Form.Item>
                         <Form.Item
                             {...formItemLayout}
                             label={ 'Company' }
@@ -254,6 +290,13 @@ export class ESPPDetailsCollector extends Component {
                                 style={{ minWidth: '120px' }}
                             />
                         </Form.Item>
+                        <Button
+                            onClick={() => {
+                                axios.get(ZAPIER_WEBHOOK_URL, { params: esppProfitsModel });
+                            }}
+                        >
+                            Send
+                        </Button>
                     </Form>
                 </Spin>
             </div>
