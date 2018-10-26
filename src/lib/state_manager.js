@@ -1,4 +1,5 @@
 import * as R from 'ramda';
+import React, { Component } from 'react';
 
 const createSimpleStateManager = () => {
     const notifyFns = [];
@@ -64,8 +65,87 @@ const createSimpleStateManager = () => {
     };
 };
 
-export const STATE_MANAGERS = {
-    COMPANY_INFO: createSimpleStateManager(),
-    ESPP_PROFITS_MODEL_INPUTS: createSimpleStateManager(),
-    STOCK_DATA: createSimpleStateManager(),
+const STATE_MANAGERS_CACHE = {};
+
+const withStateManagers = ({ WrappedComponent, stateManagerNames }) => {
+    const STATE_MANAGERS = R.map(
+        (name) => ( { name, manager: getStateManager({ name }) } ),
+        stateManagerNames
+    );
+
+    // ...and returns another component...
+    const WrappedWithStateManagers = class extends Component {
+        constructor(props) {
+            super(props);
+
+            this.state = R.reduce(
+                (state, { name, manager }) => R.merge(
+                    state,
+                    { [name]: manager.getCurrentState(), }
+                ),
+                {},
+                STATE_MANAGERS
+            );
+
+            this.UNSUB_FUNCTIONS = [];
+        }
+
+        componentDidMount() {
+            // ... that takes care of the subscription...
+            R.forEach(
+                ({ name, manager }) => {
+                    this.UNSUB_FUNCTIONS.push(manager.subscribe(stateData => {
+                        this.setState({ [name]: stateData });
+                    }));
+                },
+                STATE_MANAGERS
+            );
+        }
+
+        componentWillUnmount() {
+            R.forEach(
+                (unsubFn) => unsubFn(),
+                this.UNSUB_FUNCTIONS
+            );
+        }
+
+        render() {
+            // ... and renders the wrapped component with the fresh data!
+            // Notice that we pass through any additional props
+            return <WrappedComponent
+                stateManagers={
+                    R.fromPairs(
+                        R.map(
+                            ({ name, manager }) => {
+                                return [ name, { manager, state: this.state[name] } ];
+                            },
+                            STATE_MANAGERS
+                        )
+                    )
+                }
+                {...this.props}
+            />;
+        }
+    };
+
+    return WrappedWithStateManagers;
+};
+
+const STATE_MANAGER_NAMES = {
+    COMPANY_INFO: 'companyInfo',
+    ESPP_PROFITS_MODEL_INPUTS: 'esppProfitsModelInputs',
+};
+
+const getStateManager = ({ name }) => {
+    if (!STATE_MANAGERS_CACHE[name]) {
+        STATE_MANAGERS_CACHE[name] = createSimpleStateManager();
+    }
+
+    return STATE_MANAGERS_CACHE[name];
+};
+
+export {
+    getStateManager,
+    STATE_MANAGER_NAMES,
+    withStateManagers,
 };
