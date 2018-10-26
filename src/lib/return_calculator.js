@@ -50,8 +50,8 @@ const calculateESPPEarnings = ({
 
     const earnings = R.map(
         ([ periodStart, periodEnd ]) => {
-            const priceOfStock = periodEnd.open;
-            const buyPriceOfStock = lookback ? Math.min(periodStart.open, periodEnd.open) : periodEnd.open;
+            const priceOfStock = periodEnd.close;
+            const buyPriceOfStock = lookback ? Math.min(periodStart.close, periodEnd.close) : periodEnd.close;
 
             const contributionThisPeriod =
                 (totalContributions + contributionPerPeriod <= ESPP_MAX_CONTRIB_PER_YEAR) ?

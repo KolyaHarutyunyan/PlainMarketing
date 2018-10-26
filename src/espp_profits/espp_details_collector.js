@@ -10,6 +10,7 @@ import {
     InputNumber,
     Radio,
     Row,
+    Tooltip,
     Spin,
     Select
 } from 'antd';
@@ -166,6 +167,23 @@ export class ESPPDetailsCollector extends Component {
 
         return (
             <div className='espp-details-collector-container'>
+                <p>
+                    <strong>
+                        Cake Financials’ Employee Stock Purchase Plan (ESPP) Calculator
+                    </strong>
+                </p>
+                <p>
+                    How much money can you make with your company’s Employee Stock Purchase Plan? We built this calculator so that you can see how much money you are missing out on by not participating in your company’s Employee Stock Purchase Plan. Enter your company’s ESPP details below and our calculator will show you how much money you would have made last year using Cake to enroll in your ESPP.*
+                </p>
+
+                <p>
+                    <strong>What is Cake?</strong>
+                </p>
+                <p>
+                    Cake gives you interest-free money to invest in your Employee Stock Purchase Plan and manages your account to maximize annual returns.
+
+                    Cake is completely free. If profits are made, we split them. It is about time that you have your cake and eat it too!
+                </p>
                 <Spin spinning={ loadingCompanyInfo }>
                     <Row type='flex' justify='center'>
                         <Col span={20}>
@@ -326,6 +344,11 @@ export class ESPPDetailsCollector extends Component {
                                     </Col>
                                 </Row>
                             </Form>
+                            <Tooltip
+                                title={'Sometimes these are publicly available, if not, try searching for ESPP or ESOP within your employee portal. Lastly, you can always inquire with your benefits and compensation department. There is no harm in trying some values now to get a ballpark estimate and then coming back to the tool with exact details once ready.'}
+                            >
+                                <i><a>{ 'What if I don\'t know my ESPP details?' }</a></i>
+                            </Tooltip>
                         </Col>
                     </Row>
                 </Spin>
