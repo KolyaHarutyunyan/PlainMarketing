@@ -21,19 +21,19 @@ export const ESPPProfitsDisplay = withStateManagers({
         STATE_MANAGER_NAMES.STOCK_DATA
     ],
     WrappedComponent: class ESPPProfitsDisplay extends Component {
-        setStateManagers() {
-            this.esppProfitsModelInputsStateManager =
+        constructor(props) {
+            super(props);
+
+            this.esppProfitsModelInputsStateManager = () =>
                 this.props.stateManagers[STATE_MANAGER_NAMES.ESPP_PROFITS_MODEL_INPUTS];
 
-            this.stockDataStateManager =
+            this.stockDataStateManager = () =>
                 this.props.stateManagers[STATE_MANAGER_NAMES.STOCK_DATA];
         }
 
         async componentDidMount() {
-            this.setStateManagers();
-
-            this.stockDataStateManager.manager.asyncUpdate(async () => {
-                const esppProfitsModel = this.esppProfitsModelInputsStateManager.state.data;
+            this.stockDataStateManager().manager.asyncUpdate(async () => {
+                const esppProfitsModel = this.esppProfitsModelInputsStateManager().state.data;
 
                 const fiveYearStockData = (await axios.get(get5YDataUrl(esppProfitsModel.company))).data;
 
@@ -59,21 +59,19 @@ export const ESPPProfitsDisplay = withStateManagers({
         }
 
         render() {
-            this.setStateManagers();
-
             const loadingStockData = R.propOr(
                 true,
                 'loading',
-                this.stockDataStateManager.state
+                this.stockDataStateManager().state
             );
 
             const returnInfo = R.propOr(
                 null,
                 'returnInfo',
-                this.stockDataStateManager.state.data
+                this.stockDataStateManager().state.data
             );
 
-            const { periodCadenceInMonths } = this.esppProfitsModelInputsStateManager.state.data;
+            const { periodCadenceInMonths } = this.esppProfitsModelInputsStateManager().state.data;
             const numberOfCards = 12 / periodCadenceInMonths;
 
             return (
