@@ -37,20 +37,28 @@ companyInfoStateManager.asyncUpdate(async () => {
     const commonStockCompanies = R.filter(({ type }) => type === TICKET_TYPES.COMMON_STOCK, companyInfo);
     const tickersPlusNames = R.map(({ symbol, name }) => `${symbol}||${name}`, commonStockCompanies);
 
+    const symbolDisplayNames = R.fromPairs(
+        R.map(
+            ({ symbol, name }) => [ symbol, `${name} | ${symbol}` ],
+            commonStockCompanies
+        )
+    );
+
     return {
         commonStockCompanies,
-        tickersPlusNames
+        symbolDisplayNames,
+        tickersPlusNames,
     };
 });
 
 esppProfitsModelInputsStateManager.syncUpdate({
-    contributionPercentage: 0.10,
+    contributionPercentage: 0.15,
     company: undefined,
     email: '',
     discount: 0.15,
     income: 60000,
     lookback: true,
-    periodStartDate: moment(),
+    periodStartDate: moment().add(-1, 'years').add(-1, 'weeks'),
     periodCadenceInMonths: 6,
 });
 export class ESPPDetailsCollector extends Component {
@@ -78,9 +86,10 @@ export class ESPPDetailsCollector extends Component {
         this.esppProfitsModelUnsub();
     }
 
-    renderCompanySelect() {
+    renderCompanySelect(esppProfitsModel) {
         const companies = R.pathOr([], [ 'companyInfo', 'data', 'commonStockCompanies' ], this.state);
         const tickersPlusNames = R.pathOr([], [ 'companyInfo', 'data', 'tickersPlusNames' ], this.state);
+        const symbolDisplayNames = R.pathOr({}, [ 'companyInfo', 'data', 'symbolDisplayNames' ], this.state);
 
         const filteredCompaniesIdx = filter(
             this.state.companySearchValue || '',
@@ -91,25 +100,26 @@ export class ESPPDetailsCollector extends Component {
         const filteredCompanies = R.map(R.nth(R.__, companies), filteredCompaniesIdx);
 
         return <Select
-            showSearch
-            placeholder={ 'Select a company' }
+            defaultValue={symbolDisplayNames[esppProfitsModel.company]}
             defaultActiveFirstOption={false}
-            showArrow={true}
             filterOption={false}
+            notFoundContent={null}
             onSearch={(companySearchValue) => this.setState({ companySearchValue })}
             onChange={
                 (selectedCompany) => esppProfitsModelInputsStateManager.syncUpdate({ company: selectedCompany })
             }
-            notFoundContent={null}
+            placeholder={ 'Select a company' }
+            showArrow={true}
+            showSearch
         >
             {
-                R.map(({ symbol, name }) => {
+                R.map(({ symbol }) => {
                     return (
                         <Select.Option
                             key={ symbol }
                             value={ symbol }
                         >
-                            { `${name} | ${symbol}` }
+                            { symbolDisplayNames[symbol] }
                         </Select.Option>
                     );
                 }, filteredCompanies)
@@ -178,13 +188,13 @@ export class ESPPDetailsCollector extends Component {
                                     />
                                 </Form.Item>
                                 <Form.Item
-                                    label={ 'Period Start Date' }
+                                    label={ 'Purchase Period Start Date' }
                                     validateStatus={ profitsModelValidation.periodStartDate ? 'success' : 'error' }
                                     help={ profitsModelValidation.periodStartDate ? '' : 'Please select the period start date' }
                                 >
                                     <DatePicker
                                         defaultValue={ esppProfitsModel.periodStartDate }
-                                        disabledDate={(c) => c > moment() }
+                                        disabledDate={(c) => c > moment().add(-1, 'years').add(-1, 'weeks') }
                                         format={ 'MMM DD, YYYY' }
                                         showToday={ false }
                                         onChange={
@@ -197,16 +207,16 @@ export class ESPPDetailsCollector extends Component {
                                     validateStatus={ profitsModelValidation.company ? 'success' : 'error' }
                                     help={ profitsModelValidation.company ? '' : 'Please select a company' }
                                 >
-                                    { this.renderCompanySelect() }
+                                    { this.renderCompanySelect(esppProfitsModel) }
                                 </Form.Item>
                                 <Form.Item
-                                    label={ 'Yearly Income' }
+                                    label={ 'Last year’s income (including bonus)' }
                                     validateStatus={ profitsModelValidation.income ? 'success' : 'error' }
                                     help={ profitsModelValidation.income ? '' : 'Please enter your yearly income' }
                                 >
                                     <InputNumber
                                         value={ esppProfitsModel.income }
-                                        formatter={(value) => formatDollars(parseFloat(value))}
+                                        formatter={(value) => formatDollars({ value: parseFloat(value), digits: 0 })}
                                         min={0}
                                         max={1000000}
                                         onChange={
@@ -231,7 +241,7 @@ export class ESPPDetailsCollector extends Component {
                                     </Radio.Group>
                                 </Form.Item>
                                 <Form.Item
-                                    label={ 'Period Cadence' }
+                                    label={ 'Purchase Period Cadence' }
                                 >
                                     <Radio.Group
                                         defaultValue={ `${esppProfitsModel.periodCadenceInMonths}` }
@@ -297,7 +307,13 @@ export class ESPPDetailsCollector extends Component {
                                             onClick={() => {
                                                 axios.post(
                                                     config.apiGateway.proxyZapierWebhookURL,
-                                                    { zapierWebhookId: ZAPIER_WEBHOOK_ID, zapierPostBody: esppProfitsModel }
+                                                    {
+                                                        zapierWebhookId: ZAPIER_WEBHOOK_ID,
+                                                        zapierPostBody: {
+                                                            slackChannel: config.calculatorResponseSlackChannelName,
+                                                            esppProfitsModel
+                                                        }
+                                                    }
                                                 );
 
                                                 this.props.doneCollectingData();

@@ -60,7 +60,7 @@ export class ESPPProfitsDisplay extends Component {
     }
 
     componentWillUnmount() {
-        this.esppProfitsModelUnsub();
+        this.stockDataUnsub();
     }
 
     render() {
@@ -90,8 +90,13 @@ export class ESPPProfitsDisplay extends Component {
                                     const title = returnInfo && `Period Ending on ${currentPeriodReturnInfo.periodEnd.esppPeriodDate}`;
                                     const description = returnInfo && (
                                         <Fragment>
-                                            <p>Contribution During Period: { formatDollars(currentPeriodReturnInfo.contributionPerPeriod) }</p>
-                                            <p>Money Made By Client: { formatDollars(currentPeriodReturnInfo.moneyMadeByClient) }</p>
+                                            <p>Contribution During Period: { formatDollars({ value: currentPeriodReturnInfo.contributionThisPeriod }) }</p>
+                                            <p>Money Made By Client: { formatDollars({ value: currentPeriodReturnInfo.moneyMadeByClient }) }</p>
+                                            <textarea
+                                                readOnly
+                                                style={{ minWidth: '100%' }}
+                                                value={JSON.stringify(currentPeriodReturnInfo, null, 4)}
+                                            />
                                         </Fragment>
                                     );
 

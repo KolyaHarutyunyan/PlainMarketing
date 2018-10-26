@@ -45,31 +45,36 @@ const calculateESPPEarnings = ({
     contributionPercentage
 }) => {
     const numberOfPeriods = MONTHS_IN_YEAR / periodCadenceInMonths;
-    const contributionPerPeriod = Math.min(
-        contributionPercentage * income / numberOfPeriods,
-        ESPP_MAX_CONTRIB_PER_YEAR / numberOfPeriods
-    );
+    const contributionPerPeriod = contributionPercentage * income / numberOfPeriods;
+    let totalContributions = 0;
 
     const earnings = R.map(
         ([ periodStart, periodEnd ]) => {
             const priceOfStock = periodEnd.open;
             const buyPriceOfStock = lookback ? Math.min(periodStart.open, periodEnd.open) : periodEnd.open;
 
+            const contributionThisPeriod =
+                (totalContributions + contributionPerPeriod <= ESPP_MAX_CONTRIB_PER_YEAR) ?
+                    contributionPerPeriod : ESPP_MAX_CONTRIB_PER_YEAR - totalContributions;
+
+            totalContributions += contributionThisPeriod;
+
             const discountedPurchasePrice = (1 - discount) * buyPriceOfStock;
-            const stockBought = Math.floor(contributionPerPeriod / discountedPurchasePrice);
+            const stockBought = Math.floor(contributionThisPeriod / discountedPurchasePrice);
             const moneyUsedToBuyStock = stockBought * discountedPurchasePrice;
-            const unusedMoney = contributionPerPeriod - moneyUsedToBuyStock;
+            const unusedMoney = contributionThisPeriod - moneyUsedToBuyStock;
             const totalSalePrice = stockBought * priceOfStock;
             const gain = totalSalePrice - moneyUsedToBuyStock;
-            const amountToPayBack = contributionPerPeriod + SHARE_PERCENTAGE * gain;
+            const amountToPayBack = contributionThisPeriod + SHARE_PERCENTAGE * gain;
             const cashInBankAfterSale = totalSalePrice + unusedMoney;
             const moneyMadeByClient = cashInBankAfterSale - amountToPayBack;
-            const moneyMadeByCake = amountToPayBack - contributionPerPeriod;
+            const moneyMadeByCake = amountToPayBack - contributionThisPeriod;
+
             return {
                 amountToPayBack,
                 buyPriceOfStock,
                 cashInBankAfterSale,
-                contributionPerPeriod,
+                contributionThisPeriod,
                 discountedPurchasePrice,
                 gain,
                 unusedMoney,

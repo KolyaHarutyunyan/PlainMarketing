@@ -5,6 +5,11 @@ const URL_STAGES = {
 
 const REACT_APP_BUILD_ENV = process.env.REACT_APP_BUILD_ENV || process.env.NODE_ENV;
 
+const CALCULATOR_RESPONSE_SLACK_CHANNEL_NAME = {
+    production: 'calculator-resp',
+    development: 'calculator-resp-dev',
+};
+
 const URL = URL_STAGES[REACT_APP_BUILD_ENV];
 const proxyZapierWebhookURL = `${URL}/proxy/zapier`;
 
@@ -14,4 +19,5 @@ export default {
         URL,
         proxyZapierWebhookURL
     },
+    calculatorResponseSlackChannelName: CALCULATOR_RESPONSE_SLACK_CHANNEL_NAME[REACT_APP_BUILD_ENV]
 };
