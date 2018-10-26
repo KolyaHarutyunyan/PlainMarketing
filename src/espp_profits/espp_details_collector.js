@@ -75,9 +75,15 @@ export const ESPPDetailsCollector = withStateManagers({
         }
 
         renderCompanySelect(esppProfitsModel) {
-            const companies = R.pathOr([], [ 'data', 'commonStockCompanies' ], this.companyInfoStateManager().state);
-            const tickersPlusNames = R.pathOr([], [ 'data', 'tickersPlusNames' ], this.companyInfoStateManager().state);
-            const symbolDisplayNames = R.pathOr({}, [ 'data', 'symbolDisplayNames' ], this.companyInfoStateManager().state);
+            const [ companies, tickersPlusNames, symbolDisplayNames ] =
+                R.map(
+                    ([ field, defaultValue ]) => R.propOr(defaultValue, field, this.companyInfoStateManager().getData()),
+                    [
+                        [ 'commonStockCompanies', [] ],
+                        [ 'tickersPlusNames', [] ],
+                        [ 'symbolDisplayNames', {} ]
+                    ]
+                );
 
             const filteredCompaniesIdx = filter(
                 this.state.companySearchValue || '',
@@ -94,7 +100,7 @@ export const ESPPDetailsCollector = withStateManagers({
                 notFoundContent={null}
                 onSearch={(companySearchValue) => this.setState({ companySearchValue })}
                 onChange={
-                    (selectedCompany) => this.esppProfitsModelInputsStateManager().manager.syncUpdate({ company: selectedCompany })
+                    (selectedCompany) => this.esppProfitsModelInputsStateManager().syncUpdate({ company: selectedCompany })
                 }
                 placeholder={ 'Select a company' }
                 showArrow={true}
@@ -143,9 +149,9 @@ export const ESPPDetailsCollector = withStateManagers({
         }
 
         render() {
-            const loadingCompanyInfo = R.propOr(true, 'loading', this.companyInfoStateManager().state);
+            const loadingCompanyInfo = this.companyInfoStateManager().isLoading();
 
-            const esppProfitsModel = R.propOr({}, 'data', this.esppProfitsModelInputsStateManager().state);
+            const esppProfitsModel = this.esppProfitsModelInputsStateManager().getData();
             const profitsModelValidation = this.validateProfitsModel(esppProfitsModel);
 
             return (
@@ -181,7 +187,7 @@ export const ESPPDetailsCollector = withStateManagers({
                                             onChange={
                                                 (event) => {
                                                     const email = event.target.value || '';
-                                                    this.esppProfitsModelInputsStateManager().manager.syncUpdate({ email });
+                                                    this.esppProfitsModelInputsStateManager().syncUpdate({ email });
                                                 }
                                             }
                                             onFocus={this.selectAllOnFocus}
@@ -199,7 +205,7 @@ export const ESPPDetailsCollector = withStateManagers({
                                             format={ 'MMM DD, YYYY' }
                                             showToday={ false }
                                             onChange={
-                                                (periodStartDate) => this.esppProfitsModelInputsStateManager().manager.syncUpdate({ periodStartDate })
+                                                (periodStartDate) => this.esppProfitsModelInputsStateManager().syncUpdate({ periodStartDate })
                                             }
                                         />
                                     </Form.Item>
@@ -221,7 +227,7 @@ export const ESPPDetailsCollector = withStateManagers({
                                             min={0}
                                             max={1000000}
                                             onChange={
-                                                (income) => this.esppProfitsModelInputsStateManager().manager.syncUpdate({ income })
+                                                (income) => this.esppProfitsModelInputsStateManager().syncUpdate({ income })
                                             }
                                             onFocus={this.selectAllOnFocus}
                                             parser={value => value.replace(/\$\s?|(,*)/g, '')}
@@ -234,7 +240,7 @@ export const ESPPDetailsCollector = withStateManagers({
                                         <Radio.Group
                                             defaultValue={ `${esppProfitsModel.lookback}` }
                                             onChange={
-                                                ({ target: { value } }) => this.esppProfitsModelInputsStateManager().manager.syncUpdate({ lookback: value === 'true' })
+                                                ({ target: { value } }) => this.esppProfitsModelInputsStateManager().syncUpdate({ lookback: value === 'true' })
                                             }
                                         >
                                             <Radio.Button value='true'>YES</Radio.Button>
@@ -247,7 +253,7 @@ export const ESPPDetailsCollector = withStateManagers({
                                         <Radio.Group
                                             defaultValue={ `${esppProfitsModel.periodCadenceInMonths}` }
                                             onChange={
-                                                ({ target: { value } }) => this.esppProfitsModelInputsStateManager().manager.syncUpdate({ periodCadenceInMonths: parseInt(value, 10) })
+                                                ({ target: { value } }) => this.esppProfitsModelInputsStateManager().syncUpdate({ periodCadenceInMonths: parseInt(value, 10) })
                                             }
                                         >
                                             <Radio.Button value='1'>1 Month</Radio.Button>
@@ -269,7 +275,7 @@ export const ESPPDetailsCollector = withStateManagers({
                                             onChange={
                                                 (discount) => {
                                                     if (discount !== undefined) {
-                                                        this.esppProfitsModelInputsStateManager().manager.syncUpdate({ discount: Math.floor(discount) / 100 });
+                                                        this.esppProfitsModelInputsStateManager().syncUpdate({ discount: Math.floor(discount) / 100 });
                                                     }
                                                 }
                                             }
@@ -291,7 +297,7 @@ export const ESPPDetailsCollector = withStateManagers({
                                             onChange={
                                                 (contributionPercentage) => {
                                                     if (contributionPercentage !== undefined) {
-                                                        this.esppProfitsModelInputsStateManager().manager.syncUpdate({ contributionPercentage: Math.floor(contributionPercentage) / 100 });
+                                                        this.esppProfitsModelInputsStateManager().syncUpdate({ contributionPercentage: Math.floor(contributionPercentage) / 100 });
                                                     }
                                                 }
                                             }

@@ -32,8 +32,8 @@ export const ESPPProfitsDisplay = withStateManagers({
         }
 
         async componentDidMount() {
-            this.stockDataStateManager().manager.asyncUpdate(async () => {
-                const esppProfitsModel = this.esppProfitsModelInputsStateManager().state.data;
+            this.stockDataStateManager().asyncUpdate(async () => {
+                const esppProfitsModel = this.esppProfitsModelInputsStateManager().getData();
 
                 const fiveYearStockData = (await axios.get(get5YDataUrl(esppProfitsModel.company))).data;
 
@@ -59,19 +59,15 @@ export const ESPPProfitsDisplay = withStateManagers({
         }
 
         render() {
-            const loadingStockData = R.propOr(
-                true,
-                'loading',
-                this.stockDataStateManager().state
-            );
+            const loadingStockData = this.stockDataStateManager().isLoading();
 
             const returnInfo = R.propOr(
                 null,
                 'returnInfo',
-                this.stockDataStateManager().state.data
+                this.stockDataStateManager().getData()
             );
 
-            const { periodCadenceInMonths } = this.esppProfitsModelInputsStateManager().state.data;
+            const { periodCadenceInMonths } = this.esppProfitsModelInputsStateManager().getData();
             const numberOfCards = 12 / periodCadenceInMonths;
 
             return (

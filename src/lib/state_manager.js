@@ -60,6 +60,9 @@ const createSimpleStateManager = () => {
     return {
         asyncUpdate,
         getCurrentState: () => lastNotification,
+        isLoading: () => lastNotification.loading,
+        getData: () => lastNotification.data,
+        getError: () => lastNotification.error,
         syncUpdate,
         subscribe,
     };
@@ -74,18 +77,9 @@ const withStateManagers = ({ WrappedComponent, stateManagerNames }) => {
     );
 
     // ...and returns another component...
-    const WrappedWithStateManagers = class extends Component {
+    const WrappedWithStateManagers = class WrappedWithStateManagers extends Component {
         constructor(props) {
             super(props);
-
-            this.state = R.reduce(
-                (state, { name, manager }) => R.merge(
-                    state,
-                    { [name]: manager.getCurrentState(), }
-                ),
-                {},
-                STATE_MANAGERS
-            );
 
             this.UNSUB_FUNCTIONS = [];
         }
@@ -93,9 +87,9 @@ const withStateManagers = ({ WrappedComponent, stateManagerNames }) => {
         componentDidMount() {
             // ... that takes care of the subscription...
             R.forEach(
-                ({ name, manager }) => {
-                    this.UNSUB_FUNCTIONS.push(manager.subscribe(stateData => {
-                        this.setState({ [name]: stateData });
+                ({ manager }) => {
+                    this.UNSUB_FUNCTIONS.push(manager.subscribe(() => {
+                        this.setState({});
                     }));
                 },
                 STATE_MANAGERS
@@ -117,7 +111,7 @@ const withStateManagers = ({ WrappedComponent, stateManagerNames }) => {
                     R.fromPairs(
                         R.map(
                             ({ name, manager }) => {
-                                return [ name, { manager, state: this.state[name] } ];
+                                return [ name, manager ];
                             },
                             STATE_MANAGERS
                         )
