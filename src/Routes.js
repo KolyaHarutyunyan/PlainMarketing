@@ -4,12 +4,12 @@ import Home from './containers/Home';
 import NotFound from './containers/NotFound';
 
 const Routes = () => {
-    return (
-        <Switch>
-            <Route path='/' exact component={Home} />
-            <Route component={NotFound} />
-        </Switch>
-    );
+  return (
+    <Switch>
+      <Route path="/" exact component={Home} />
+      <Route component={NotFound} />
+    </Switch>
+  );
 };
 
 export default Routes;
