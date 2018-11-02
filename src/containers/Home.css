@@ -1,0 +1,29 @@
+.home-container .espp-header-container {
+  font-size: 36px;
+  letter-spacing: -0.1px;
+  text-align: center;
+  color: #ffffff;
+  background-image: linear-gradient(276deg, #9953f3, #5412dc);
+  padding-top: 43px;
+  padding-bottom: 28px;
+}
+
+.home-container .espp-header-container p {
+  margin-bottom: 0px;
+}
+
+.home-container .cake-logo-with-words-container {
+  background-image: url(../public/calculator/logo-with-words.png);
+  background-size: cover;
+  height: 69px;
+  width: 186px;
+  position: absolute;
+  right: 55.5px;
+  top: 30.5px;
+}
+
+@media screen and (max-width: 1000px) {
+  .home-container .cake-logo-with-words-container {
+    display: none;
+  }
+}

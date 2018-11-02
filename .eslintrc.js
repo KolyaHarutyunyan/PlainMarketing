@@ -49,5 +49,6 @@ module.exports = {
     strict: 0,
     'flowtype/no-types-missing-file-annotation': 0,
     'react/prop-types': [1],
+    'jsx-quotes': ['error', 'prefer-single'],
   },
 };

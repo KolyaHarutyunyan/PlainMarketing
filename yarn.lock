@@ -4593,6 +4593,10 @@ load-json-file@^4.0.0:
     pify "^3.0.0"
     strip-bom "^3.0.0"
 
+load-script@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/load-script/-/load-script-1.0.0.tgz#0491939e0bee5643ee494a7e3da3d2bac70c6ca4"
+
 loader-fs-cache@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/loader-fs-cache/-/loader-fs-cache-1.0.1.tgz#56e0bf08bd9708b26a765b68509840c8dec9fdbc"
@@ -6466,6 +6470,12 @@ react-lazy-load@^3.0.12:
 react-lifecycles-compat@^3.0.2, react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
+
+react-mathjax-preview@^0.1.10:
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/react-mathjax-preview/-/react-mathjax-preview-0.1.10.tgz#40c625d39b193c3cff665087b48e225f4f0b2a04"
+  dependencies:
+    load-script "^1.0.0"
 
 react-overlays@^0.8.0:
   version "0.8.3"

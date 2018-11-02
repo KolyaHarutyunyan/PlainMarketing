@@ -3,6 +3,8 @@ import { Button, Row } from 'antd';
 import { ESPPDetailsCollector } from '../espp_profits/espp_details_collector';
 import { ESPPProfitsDisplay } from '../espp_profits/espp_profits_display';
 
+import './Home.css';
+
 export default class Home extends Component {
   constructor(props) {
     super(props);
@@ -12,8 +14,14 @@ export default class Home extends Component {
 
   render() {
     return (
-      <div className="home-container">
-        <div className="lander">
+      <div className='home-container'>
+        <div className='lander'>
+          <Row className='espp-header-container'>
+            <div className='cake-logo-with-words-container' />
+            <p>
+              Employee Stock Purchase Plan <br /> (ESPP) Calculator
+            </p>
+          </Row>
           {this.state.doneCollectingData ? (
             <Fragment>
               <Row>
