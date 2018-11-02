@@ -27,3 +27,24 @@
     display: none;
   }
 }
+
+.home-container .espp-calculator-footer {
+  padding: 43px;
+  text-align: center;
+  font-size: 16px;
+  letter-spacing: 0px;
+  color: #4a4a4a;
+}
+
+.home-container .espp-calculator-footer p.what-is-cake-fin {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.home-container .espp-standalone-logo-container {
+  background-image: url(../public/calculator/cake-logo-standalone.png);
+  background-size: cover;
+  width: 96px;
+  height: 60px;
+  margin-bottom: 30px;
+}
