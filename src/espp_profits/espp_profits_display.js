@@ -4,16 +4,19 @@ import { Button, Card, Col, Icon, Row, Spin } from 'antd';
 import axios from 'axios';
 import moment from 'moment';
 
+import config from '../config';
 import * as returnCalculator from '../lib/return_calculator';
 import { formatDollars } from '../lib/helpers';
 
-import { withStateManagers, STATE_MANAGER_NAMES } from '../lib/state_manager';
-
 import './espp_profits_display.css';
+
+const {
+  stateManager: { container: stateManagerContainer, STATE_MANAGER_NAMES },
+} = config;
 
 const get5YDataUrl = companyTicker => `https://api.iextrading.com/1.0/stock/${companyTicker}/chart/5y`;
 
-export const ESPPProfitsDisplay = withStateManagers({
+export const ESPPProfitsDisplay = stateManagerContainer.withStateManagers({
   stateManagerNames: [ STATE_MANAGER_NAMES.ESPP_PROFITS_MODEL_INPUTS, STATE_MANAGER_NAMES.STOCK_DATA ],
   WrappedComponent: class ESPPProfitsDisplay extends Component {
     constructor(props) {
@@ -121,59 +124,67 @@ export const ESPPProfitsDisplay = withStateManagers({
             {this.renderReturnInfoSummaryArea()}
             <Row className='period-returns-summary-container'>
               <Col span={16} offset={4}>
-                <Row gutter={32}>
-                  {R.map(cardIdx => {
-                    const currentPeriodReturnInfo = returnInfo && returnInfo[cardIdx];
+                {R.addIndex(R.map)(
+                  (groupOfCols, key) => (
+                    <Row key={key} gutter={32}>
+                      {groupOfCols}
+                    </Row>
+                  ),
+                  R.splitEvery(
+                    2,
+                    R.map(cardIdx => {
+                      const currentPeriodReturnInfo = returnInfo && returnInfo[cardIdx];
 
-                    const description = !R.isNil(returnInfo) ? (
-                      <Fragment>
-                        <Row type='flex' justify='center' align='middle'>
-                          <Col span={6}>
-                            <p className={`period-label ${numberOfCards === 4 ? 'period-label-quarterly' : ''}`}>
-                              {NUMBER_OF_CARDS_TO_LABEL_MAP[numberOfCards](cardIdx)}
-                            </p>
-                            <p className='period-timespan'>
-                              {moment(currentPeriodReturnInfo.periodStart.date).format('MM-DD-YYYY')}
-                              <br />
-                              to
-                              <br />
-                              {moment(currentPeriodReturnInfo.periodEnd.date).format('MM-DD-YYYY')}
-                            </p>
-                          </Col>
-                          <Col span={18}>
-                            <p className='period-gain-in-dollars'>
-                              + {formatDollars({ value: currentPeriodReturnInfo.moneyMadeByClient, space: false })}
-                            </p>
-                            <p className='stock-start-end'>
-                              {'Stock Start: '}
-                              {formatDollars({ value: currentPeriodReturnInfo.periodStart.close, space: false })}
-                              <br />
-                              {'Stock End: '}
-                              {formatDollars({ value: currentPeriodReturnInfo.periodEnd.close, space: false })}
-                            </p>
-                          </Col>
-                        </Row>
-                      </Fragment>
-                    ) : null;
+                      const description = !R.isNil(returnInfo) ? (
+                        <Fragment>
+                          <Row type='flex' justify='center' align='middle'>
+                            <Col span={6}>
+                              <p className={`period-label ${numberOfCards === 4 ? 'period-label-quarterly' : ''}`}>
+                                {NUMBER_OF_CARDS_TO_LABEL_MAP[numberOfCards](cardIdx)}
+                              </p>
+                              <p className='period-timespan'>
+                                {moment(currentPeriodReturnInfo.periodStart.date).format('MM-DD-YYYY')}
+                                <br />
+                                to
+                                <br />
+                                {moment(currentPeriodReturnInfo.periodEnd.date).format('MM-DD-YYYY')}
+                              </p>
+                            </Col>
+                            <Col span={18}>
+                              <p className='period-gain-in-dollars'>
+                                + {formatDollars({ value: currentPeriodReturnInfo.moneyMadeByClient, space: false })}
+                              </p>
+                              <p className='stock-start-end'>
+                                {'Stock Start: '}
+                                {formatDollars({ value: currentPeriodReturnInfo.periodStart.close, space: false })}
+                                <br />
+                                {'Stock End: '}
+                                {formatDollars({ value: currentPeriodReturnInfo.periodEnd.close, space: false })}
+                              </p>
+                            </Col>
+                          </Row>
+                        </Fragment>
+                      ) : null;
 
-                    const NUMBER_OF_CARDS_TO_COL_SPAN_MAP = {
-                      12: { span: 12, offset: 0 },
-                      4: { span: 12, offset: 0 },
-                      2: { span: 12, offset: 0 },
-                      1: { span: 20, offset: 2 },
-                    };
+                      const NUMBER_OF_CARDS_TO_COL_SPAN_MAP = {
+                        12: { span: 12, offset: 0 },
+                        4: { span: 12, offset: 0 },
+                        2: { span: 12, offset: 0 },
+                        1: { span: 20, offset: 2 },
+                      };
 
-                    const spanInfo = NUMBER_OF_CARDS_TO_COL_SPAN_MAP[numberOfCards];
+                      const spanInfo = NUMBER_OF_CARDS_TO_COL_SPAN_MAP[numberOfCards];
 
-                    return (
-                      <Col key={cardIdx} span={spanInfo.span} offset={spanInfo.offset}>
-                        <Card className='espp-period-profits-card' loading={loadingStockData}>
-                          <Card.Meta description={description} />
-                        </Card>
-                      </Col>
-                    );
-                  }, R.times(R.identity, numberOfCards))}
-                </Row>
+                      return (
+                        <Col key={cardIdx} span={spanInfo.span} offset={spanInfo.offset}>
+                          <Card className='espp-period-profits-card' loading={loadingStockData}>
+                            <Card.Meta description={description} />
+                          </Card>
+                        </Col>
+                      );
+                    }, R.times(R.identity, numberOfCards))
+                  )
+                )}
               </Col>
             </Row>
           </Spin>

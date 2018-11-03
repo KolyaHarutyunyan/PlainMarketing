@@ -4,18 +4,21 @@ import * as R from 'ramda';
 import { Button, Col, DatePicker, Form, Input, InputNumber, Radio, Row, Tooltip, Spin, Select } from 'antd';
 import axios from 'axios';
 import validator from 'validator';
-import { getStateManager, withStateManagers, STATE_MANAGER_NAMES } from '../lib/state_manager';
 
 import filter from './filter';
 import './espp_details_collector.css';
 import config from '../config';
 import { formatDollars } from '../lib/helpers';
 
+const {
+  stateManager: { container: stateManagerContainer, STATE_MANAGER_NAMES },
+} = config;
+
 const ZAPIER_WEBHOOK_ID = '403974/lpw5s0';
 
 const TICKET_TYPES = { COMMON_STOCK: 'cs' };
 
-getStateManager({ name: STATE_MANAGER_NAMES.COMPANY_INFO }).asyncUpdate(async () => {
+stateManagerContainer.getStateManager({ name: STATE_MANAGER_NAMES.COMPANY_INFO }).asyncUpdate(async () => {
   const { data: companyInfo } = await axios.get('https://api.iextrading.com/1.0/ref-data/symbols');
 
   const commonStockCompanies = R.filter(({ type }) => type === TICKET_TYPES.COMMON_STOCK, companyInfo);
@@ -32,7 +35,7 @@ getStateManager({ name: STATE_MANAGER_NAMES.COMPANY_INFO }).asyncUpdate(async ()
   };
 });
 
-getStateManager({ name: STATE_MANAGER_NAMES.ESPP_PROFITS_MODEL_INPUTS }).syncUpdate({
+stateManagerContainer.getStateManager({ name: STATE_MANAGER_NAMES.ESPP_PROFITS_MODEL_INPUTS }).syncUpdate({
   contributionPercentage: 0.15,
   company: undefined,
   email: '',
@@ -45,22 +48,7 @@ getStateManager({ name: STATE_MANAGER_NAMES.ESPP_PROFITS_MODEL_INPUTS }).syncUpd
   periodCadenceInMonths: 6,
 });
 
-/*
-getStateManager({ name: STATE_MANAGER_NAMES.ESPP_PROFITS_MODEL_INPUTS }).syncUpdate({
-  company: 'AAPL',
-  contributionPercentage: 0.15,
-  discount: 0.15,
-  email: 'samuel.e.perez@gmail.com',
-  income: 60000,
-  lookback: true,
-  periodCadenceInMonths: 6,
-  periodStartDate: moment()
-    .add(-1, 'years')
-    .add(-1, 'weeks'),
-});
-*/
-
-export const ESPPDetailsCollector = withStateManagers({
+export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
   stateManagerNames: [ STATE_MANAGER_NAMES.COMPANY_INFO, STATE_MANAGER_NAMES.ESPP_PROFITS_MODEL_INPUTS ],
   WrappedComponent: class ESPPDetailsCollector extends Component {
     constructor(props) {
