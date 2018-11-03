@@ -57,8 +57,13 @@ const createSimpleStateManager = () => {
     }
   };
 
+  const clearData = () => {
+    notify(R.merge(lastNotification, { loading: false, error: null, data: null }));
+  };
+
   return {
     asyncUpdate,
+    clearData,
     getCurrentState: () => lastNotification,
     isLoading: () => lastNotification.loading,
     getData: () => lastNotification.data,
@@ -103,7 +108,7 @@ const withStateManagers = ({ WrappedComponent, stateManagerNames }) => {
         <WrappedComponent
           stateManagers={R.fromPairs(
             R.map(({ name, manager }) => {
-              return [name, manager];
+              return [ name, manager ];
             }, STATE_MANAGERS)
           )}
           {...this.props}

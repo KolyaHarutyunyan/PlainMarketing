@@ -36,7 +36,15 @@
   color: #4a4a4a;
 }
 
-.home-container .espp-calculator-footer p.what-is-cake-fin {
+.home-container .espp-calculator-footer a.cake-homepage-link {
+  color: #00a4e1;
+}
+
+.home-container .espp-calculator-footer a.calendly-link {
+  text-decoration: underline;
+}
+
+.home-container .espp-calculator-footer p.footer-header-text {
   font-size: 22px;
   font-weight: bold;
 }

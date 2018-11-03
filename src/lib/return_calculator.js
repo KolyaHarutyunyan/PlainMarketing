@@ -39,7 +39,7 @@ const calculateESPPEarnings = ({
   const contributionPerPeriod = (contributionPercentage * income) / numberOfPeriods;
   let totalContributions = 0;
 
-  const earnings = R.map(([periodStart, periodEnd]) => {
+  const earnings = R.map(([ periodStart, periodEnd ]) => {
     const priceOfStock = periodEnd.close;
     const buyPriceOfStock = lookback ? Math.min(periodStart.close, periodEnd.close) : periodEnd.close;
 

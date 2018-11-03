@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Col, Row } from 'antd';
+import { Col, Row } from 'antd';
 import { ESPPDetailsCollector } from '../espp_profits/espp_details_collector';
 import { ESPPProfitsDisplay } from '../espp_profits/espp_profits_display';
 import { MethodologyExpander } from '../espp_profits/methodology_expander';
@@ -13,10 +13,34 @@ export default class Home extends Component {
     this.state = { doneCollectingData: false };
   }
 
+  renderESPPProfitsPageFooter() {
+    return (
+      <Fragment>
+        <p className='footer-header-text'>Did you want to talk with a Cake Financials analyst?</p>
+        <p>
+          {'You can '}
+          <a
+            className='calendly-link'
+            href='https://calendly.com/cakeanalyst'
+            rel='noopener noreferrer'
+            target='_blank'
+          >
+            set up a free 15 minute consultation
+          </a>
+          {' with one of our analysts or check out more details on the '}
+          <a className='cake-homepage-link' href='https://cakefinancials.com' rel='noopener noreferrer' target='_blank'>
+            Cake Financials website
+          </a>
+          .
+        </p>
+      </Fragment>
+    );
+  }
+
   renderESPPDetailsCollectorPageFooter() {
     return (
       <Fragment>
-        <p className='what-is-cake-fin'>What is Cake Financials?</p>
+        <p className='footer-header-text'>What is Cake Financials?</p>
         <p>
           What is Cake Financials? Cake gives you interest-free money to invest in your Employee Stock Purchase Plan and
           manages your account to maximize annual returns. Cake is completely free. If profits are made, we split them.
@@ -37,20 +61,7 @@ export default class Home extends Component {
             </p>
           </Row>
           {this.state.doneCollectingData ? (
-            <Fragment>
-              <Row>
-                <Button
-                  onClick={() => {
-                    this.setState({ doneCollectingData: false });
-                  }}
-                >
-                  Edit Data
-                </Button>
-              </Row>
-              <Row>
-                <ESPPProfitsDisplay />
-              </Row>
-            </Fragment>
+            <ESPPProfitsDisplay goBack={() => this.setState({ doneCollectingData: false })} />
           ) : (
             <ESPPDetailsCollector doneCollectingData={() => this.setState({ doneCollectingData: true })} />
           )}
@@ -62,7 +73,9 @@ export default class Home extends Component {
               <Col className='espp-standalone-logo-container' />
             </Row>
             <Row type='flex' justify='center'>
-              {this.state.doneCollectingData ? null : this.renderESPPDetailsCollectorPageFooter()}
+              {this.state.doneCollectingData
+                ? this.renderESPPProfitsPageFooter()
+                : this.renderESPPDetailsCollectorPageFooter()}
             </Row>
           </Col>
         </Row>

@@ -45,6 +45,21 @@ getStateManager({ name: STATE_MANAGER_NAMES.ESPP_PROFITS_MODEL_INPUTS }).syncUpd
   periodCadenceInMonths: 6,
 });
 
+/*
+getStateManager({ name: STATE_MANAGER_NAMES.ESPP_PROFITS_MODEL_INPUTS }).syncUpdate({
+  company: 'AAPL',
+  contributionPercentage: 0.15,
+  discount: 0.15,
+  email: 'samuel.e.perez@gmail.com',
+  income: 60000,
+  lookback: true,
+  periodCadenceInMonths: 6,
+  periodStartDate: moment()
+    .add(-1, 'years')
+    .add(-1, 'weeks'),
+});
+*/
+
 export const ESPPDetailsCollector = withStateManagers({
   stateManagerNames: [ STATE_MANAGER_NAMES.COMPANY_INFO, STATE_MANAGER_NAMES.ESPP_PROFITS_MODEL_INPUTS ],
   WrappedComponent: class ESPPDetailsCollector extends Component {
@@ -147,12 +162,15 @@ export const ESPPDetailsCollector = withStateManagers({
               <Row type='flex' justify='center'>
                 <Col span={20}>
                   <Form layout='vertical'>
+                    {/* WTF FUCK AUTOFOCUS!!! */}
+                    <input type='text' autoFocus='autofocus' style={{ display: 'none' }} />
                     <Form.Item
                       label={'Email'}
                       validateStatus={profitsModelValidation.email ? 'success' : 'error'}
                       help={profitsModelValidation.email ? '' : 'Please input a valid email'}
                     >
                       <Input
+                        autoFocus={false}
                         value={esppProfitsModel.email}
                         onChange={event => {
                           const email = event.target.value || '';
@@ -179,6 +197,7 @@ export const ESPPDetailsCollector = withStateManagers({
                           help={profitsModelValidation.income ? '' : 'Please enter your yearly income'}
                         >
                           <InputNumber
+                            autoFocus={false}
                             value={esppProfitsModel.income}
                             formatter={value => formatDollars({ value: parseFloat(value), digits: 0 })}
                             min={0}
@@ -251,6 +270,7 @@ export const ESPPDetailsCollector = withStateManagers({
                           help={profitsModelValidation.discount ? '' : 'Please enter your ESPP plan discount'}
                         >
                           <InputNumber
+                            autoFocus={false}
                             value={esppProfitsModel.discount * 100}
                             formatter={value => `${Math.floor(value)}%`}
                             min={0}
@@ -277,6 +297,7 @@ export const ESPPDetailsCollector = withStateManagers({
                           }
                         >
                           <InputNumber
+                            autoFocus={false}
                             value={esppProfitsModel.contributionPercentage * 100}
                             formatter={value => `${Math.floor(value)}%`}
                             min={0}
