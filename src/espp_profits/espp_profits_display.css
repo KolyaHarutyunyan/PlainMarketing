@@ -1,6 +1,11 @@
 .espp-profits-display-container .return-info-summary-container button.go-back-button {
+  width: 100%;
   min-width: 150px;
+  height: 50px;
   color: #8f2cfa;
+  background-color: #ffffff;
+  font-size: 20px;
+  border-color: #9013fe;
 }
 
 .espp-profits-display-container .return-info-summary-container button.go-back-button:hover {
@@ -10,11 +15,14 @@
 }
 
 .espp-profits-display-container .return-info-summary-container button.go-back-button span {
-  margin-left: 25px;
+  margin-left: -15px;
+  width: 100%;
+  min-width: 150px;
 }
 
 .espp-profits-display-container .return-info-summary-container button.go-back-button i {
-  margin-left: -30px;
+  margin-top: 5.5px;
+  float: left;
 }
 
 .espp-profits-display-container .return-info-summary-container {
@@ -46,8 +54,14 @@
   margin-top: 10px;
 }
 
+.espp-profits-display-container .flights-and-coffee-container p {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
 .espp-profits-display-container .period-returns-summary-container {
-  padding: 100px;
+  padding-top: 100px;
+  padding-bottom: 100px;
   background-image: url(../public/calculator/background-image.jpg);
   background-size: cover;
 }
@@ -60,12 +74,12 @@
   margin-bottom: 50px;
 }
 
-.espp-profits-display-container .espp-period-profits-card p.period-label.period-label-quarterly {
-  font-size: 48px;
+.espp-profits-display-container .espp-period-profits-card .ant-card-body {
+  padding: 12px;
 }
 
 .espp-profits-display-container .espp-period-profits-card p.period-label {
-  font-size: 36px;
+  font-size: 18px;
   font-weight: bold;
   letter-spacing: 0px;
   color: #4a4a4a;
@@ -73,9 +87,11 @@
 }
 
 .espp-profits-display-container .espp-period-profits-card p.period-timespan {
-  font-size: 14px;
+  font-size: 18px;
+  font-weight: bold;
   letter-spacing: 0px;
   color: #4a4a4a;
+  margin-bottom: -2px;
 }
 
 .espp-profits-display-container .espp-period-profits-card p.period-gain-in-dollars {
@@ -90,4 +106,6 @@
   font-size: 18px;
   color: #4a4a4a;
   letter-spacing: 0px;
+  margin-bottom: 0px;
+  line-height: 23px;
 }

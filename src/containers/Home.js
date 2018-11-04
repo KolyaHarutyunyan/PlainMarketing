@@ -68,7 +68,7 @@ export default class Home extends Component {
           <MethodologyExpander />
         </div>
         <Row className='espp-calculator-footer' type='flex' justify='center'>
-          <Col span={10}>
+          <Col xs={22} sm={16}>
             <Row type='flex' justify='center'>
               <Col className='espp-standalone-logo-container' />
             </Row>

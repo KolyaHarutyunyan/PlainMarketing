@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import moment from 'moment';
 import * as R from 'ramda';
-import { Button, Col, DatePicker, Form, Input, InputNumber, Radio, Row, Tooltip, Spin, Select } from 'antd';
+import { Button, Col, DatePicker, Form, Icon, Input, InputNumber, Radio, Row, Tooltip, Spin, Select } from 'antd';
 import axios from 'axios';
 import validator from 'validator';
 
@@ -28,9 +28,19 @@ stateManagerContainer.getStateManager({ name: STATE_MANAGER_NAMES.COMPANY_INFO }
     R.map(({ symbol, name }) => [ symbol, `${name} | ${symbol}` ], commonStockCompanies)
   );
 
+  const symbolToNameMap = R.reduce(
+    (accum, { symbol, name }) => {
+      accum[symbol] = name;
+      return accum;
+    },
+    {},
+    commonStockCompanies
+  );
+
   return {
     commonStockCompanies,
     symbolDisplayNames,
+    symbolToNameMap,
     tickersPlusNames,
   };
 });
@@ -45,7 +55,7 @@ stateManagerContainer.getStateManager({ name: STATE_MANAGER_NAMES.ESPP_PROFITS_M
   periodStartDate: moment()
     .add(-1, 'years')
     .add(-1, 'weeks'),
-  periodCadenceInMonths: 6,
+  periodCadenceInMonths: 3,
 });
 
 export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
@@ -60,6 +70,19 @@ export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
 
       this.companyInfoStateManager = this.props.stateManagers[STATE_MANAGER_NAMES.COMPANY_INFO];
       this.esppProfitsModelInputsStateManager = this.props.stateManagers[STATE_MANAGER_NAMES.ESPP_PROFITS_MODEL_INPUTS];
+    }
+
+    renderFormLabelWithTooltip({ label, tooltip }) {
+      return (
+        <Fragment>
+          <span>
+            {`${label} `}
+            <Tooltip title={tooltip}>
+              <Icon type='question-circle' theme='filled' />
+            </Tooltip>
+          </span>
+        </Fragment>
+      );
     }
 
     renderCompanySelect(esppProfitsModel) {
@@ -169,7 +192,7 @@ export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
                       />
                     </Form.Item>
                     <Row gutter={16}>
-                      <Col span={12}>
+                      <Col xs={24} sm={12}>
                         <Form.Item
                           label={'Company'}
                           validateStatus={profitsModelValidation.company ? 'success' : 'error'}
@@ -178,9 +201,12 @@ export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
                           {this.renderCompanySelect(esppProfitsModel)}
                         </Form.Item>
                       </Col>
-                      <Col span={12}>
+                      <Col xs={24} sm={12}>
                         <Form.Item
-                          label={'Last year’s income'}
+                          label={this.renderFormLabelWithTooltip({
+                            label: 'Last year’s income',
+                            tooltip: TOOLTIP_TEXTS.YEARLY_INCOME,
+                          })}
                           validateStatus={profitsModelValidation.income ? 'success' : 'error'}
                           help={profitsModelValidation.income ? '' : 'Please enter your yearly income'}
                         >
@@ -199,9 +225,12 @@ export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
                       </Col>
                     </Row>
                     <Row gutter={16}>
-                      <Col span={12}>
+                      <Col xs={24} sm={12}>
                         <Form.Item
-                          label={'Purchase Period Start Date'}
+                          label={this.renderFormLabelWithTooltip({
+                            label: 'Purchase Period Start Date',
+                            tooltip: TOOLTIP_TEXTS.PERIOD_START,
+                          })}
                           validateStatus={profitsModelValidation.periodStartDate ? 'success' : 'error'}
                           help={profitsModelValidation.periodStartDate ? '' : 'Please select the period start date'}
                         >
@@ -221,8 +250,13 @@ export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
                           />
                         </Form.Item>
                       </Col>
-                      <Col span={12}>
-                        <Form.Item label={'Lookback'}>
+                      <Col xs={24} sm={12}>
+                        <Form.Item
+                          label={this.renderFormLabelWithTooltip({
+                            label: 'Lookback',
+                            tooltip: TOOLTIP_TEXTS.LOOKBACK,
+                          })}
+                        >
                           <Radio.Group
                             defaultValue={`${esppProfitsModel.lookback}`}
                             onChange={({ target: { value } }) =>
@@ -235,7 +269,12 @@ export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
                         </Form.Item>
                       </Col>
                     </Row>
-                    <Form.Item label={'Purchase Period Cadence'}>
+                    <Form.Item
+                      label={this.renderFormLabelWithTooltip({
+                        label: 'Purchase Period Cadence',
+                        tooltip: TOOLTIP_TEXTS.PERIOD_CADENCE,
+                      })}
+                    >
                       <Radio.Group
                         defaultValue={`${esppProfitsModel.periodCadenceInMonths}`}
                         onChange={({ target: { value } }) =>
@@ -251,9 +290,12 @@ export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
                       </Radio.Group>
                     </Form.Item>
                     <Row gutter={16}>
-                      <Col span={12}>
+                      <Col xs={24} sm={12}>
                         <Form.Item
-                          label={'ESPP Discount'}
+                          label={this.renderFormLabelWithTooltip({
+                            label: 'ESPP Discount',
+                            tooltip: TOOLTIP_TEXTS.ESPP_DISCOUNT,
+                          })}
                           validateStatus={profitsModelValidation.discount ? 'success' : 'error'}
                           help={profitsModelValidation.discount ? '' : 'Please enter your ESPP plan discount'}
                         >
@@ -276,9 +318,12 @@ export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
                           />
                         </Form.Item>
                       </Col>
-                      <Col span={12}>
+                      <Col xs={24} sm={12}>
                         <Form.Item
-                          label={'Max Contribution Percentage'}
+                          label={this.renderFormLabelWithTooltip({
+                            label: 'Max Contribution Percentage',
+                            tooltip: TOOLTIP_TEXTS.MAX_CONTRIBUTION_PERCENTAGE,
+                          })}
                           validateStatus={profitsModelValidation.contributionPercentage ? 'success' : 'error'}
                           help={
                             profitsModelValidation.contributionPercentage ? '' : 'Please enter your ESPP plan discount'
@@ -348,3 +393,17 @@ export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
     }
   },
 });
+
+const TOOLTIP_TEXTS = {
+  PERIOD_START:
+    'This is at least 1 year in the past. In order to get the most accurate results, use the actual purchase period start date closest to 1 year ago. If you don’t know it, a good rule of thumb to get close-to-accurate results is to find the most recent past purchase period start date and select the date exactly 1 year before that.',
+  YEARLY_INCOME:
+    'If you include bonuses in this total, please note that our tool will average that bonus amount across all purchase periods, when in reality it would hit during a specific period. We are working on a v2 of this tool that will allow you to specify a bonus date.',
+  LOOKBACK:
+    'Does your company ESPP have lookback? The lookback provision applies your ESPP discount to the cost of stock at the lowest between (1) the closing price on the first day of the purchase/offering period; or (2) the closing price on the purchase date. ',
+  PERIOD_CADENCE:
+    'How many purchase periods does your ESPP plan have in a year. This will not matter unless your ESPP has lookback. If you are unsure, 6 months is the most common.',
+  ESPP_DISCOUNT: 'This is a value specific to your company. It is never more than 15%.',
+  MAX_CONTRIBUTION_PERCENTAGE:
+    'This is the maximum % of your earnings that you are allowed to contribute towards your ESPP.',
+};

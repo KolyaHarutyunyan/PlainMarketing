@@ -9,6 +9,7 @@ import * as returnCalculator from '../lib/return_calculator';
 import { formatDollars } from '../lib/helpers';
 
 import './espp_profits_display.css';
+import lastYearLineImageSrc from './../public/calculator/last-year-profits-line.png';
 
 const {
   stateManager: { container: stateManagerContainer, STATE_MANAGER_NAMES },
@@ -17,13 +18,17 @@ const {
 const get5YDataUrl = companyTicker => `https://api.iextrading.com/1.0/stock/${companyTicker}/chart/5y`;
 
 export const ESPPProfitsDisplay = stateManagerContainer.withStateManagers({
-  stateManagerNames: [ STATE_MANAGER_NAMES.ESPP_PROFITS_MODEL_INPUTS, STATE_MANAGER_NAMES.STOCK_DATA ],
+  stateManagerNames: [
+    STATE_MANAGER_NAMES.COMPANY_INFO,
+    STATE_MANAGER_NAMES.ESPP_PROFITS_MODEL_INPUTS,
+    STATE_MANAGER_NAMES.STOCK_DATA,
+  ],
   WrappedComponent: class ESPPProfitsDisplay extends Component {
     constructor(props) {
       super(props);
 
+      this.companyInfo = this.props.stateManagers[STATE_MANAGER_NAMES.COMPANY_INFO];
       this.esppProfitsModelInputsStateManager = this.props.stateManagers[STATE_MANAGER_NAMES.ESPP_PROFITS_MODEL_INPUTS];
-
       this.stockDataStateManager = this.props.stateManagers[STATE_MANAGER_NAMES.STOCK_DATA];
     }
 
@@ -59,9 +64,15 @@ export const ESPPProfitsDisplay = stateManagerContainer.withStateManagers({
       const dollarsLeftForJoe = dollarsEarnedLastYear - roundTripFlights * DOLLARS_PER_FLIGHT;
       const cupsOfJoe = Math.max(4, Math.ceil(dollarsLeftForJoe / DOLLARS_PER_CUP_OF_JOE));
 
+      const { company } = this.esppProfitsModelInputsStateManager.getData();
+      const { symbolToNameMap } = this.companyInfo.getData() || { symbolToNameMap: {} };
+      const companyName = symbolToNameMap[company];
+
+      console.log(returnInfo);
+
       return (
         <Row className='return-info-summary-container'>
-          <Col span={6}>
+          <Col sm={2} md={4}>
             <Button
               type='danger'
               className='go-back-button'
@@ -74,17 +85,23 @@ export const ESPPProfitsDisplay = stateManagerContainer.withStateManagers({
               Go Back
             </Button>
           </Col>
-          <Col span={12}>
+          <Col sm={20} md={16}>
             {loadingStockData ? (
-              <Card loading={true}> </Card>
+              <Card loading={true} style={{ maxWidth: '50%', margin: '0 auto' }}>
+                {' '}
+              </Card>
             ) : (
               <Fragment>
                 <Row type='flex' justify='center' align='middle'>
                   <div className='last-year-container'>
                     <p>Last year you would have made:</p>
-                    <p className='earnings'>{formatDollars({ value: dollarsEarnedLastYear })}</p>
+                    <p className='earnings'>
+                      {formatDollars({ value: dollarsEarnedLastYear })}
+                      <br />
+                      <img src={lastYearLineImageSrc} style={{ width: '180px' }} />
+                    </p>
                     <p>
-                      via your ESPP by using <strong>Cake Financials</strong>
+                      via your {companyName} ESPP by using <strong>Cake Financials</strong>
                     </p>
                   </div>
                 </Row>
@@ -123,7 +140,7 @@ export const ESPPProfitsDisplay = stateManagerContainer.withStateManagers({
           <Spin spinning={loadingStockData}>
             {this.renderReturnInfoSummaryArea()}
             <Row className='period-returns-summary-container'>
-              <Col span={16} offset={4}>
+              <Col sm={{ span: 20, offset: 2 }} lg={{ span: 16, offset: 4 }}>
                 {R.addIndex(R.map)(
                   (groupOfCols, key) => (
                     <Row key={key} gutter={32}>
@@ -138,26 +155,32 @@ export const ESPPProfitsDisplay = stateManagerContainer.withStateManagers({
                       const description = !R.isNil(returnInfo) ? (
                         <Fragment>
                           <Row type='flex' justify='center' align='middle'>
-                            <Col span={6}>
-                              <p className={`period-label ${numberOfCards === 4 ? 'period-label-quarterly' : ''}`}>
-                                {NUMBER_OF_CARDS_TO_LABEL_MAP[numberOfCards](cardIdx)}
-                              </p>
-                              <p className='period-timespan'>
-                                {moment(currentPeriodReturnInfo.periodStart.date).format('MM-DD-YYYY')}
-                                <br />
-                                to
-                                <br />
-                                {moment(currentPeriodReturnInfo.periodEnd.date).format('MM-DD-YYYY')}
+                            <Col>
+                              <p className='period-label'>
+                                Your {NUMBER_OF_CARDS_TO_LABEL_MAP[numberOfCards](cardIdx)} Earnings
                               </p>
                             </Col>
-                            <Col span={18}>
-                              <p className='period-gain-in-dollars'>
-                                + {formatDollars({ value: currentPeriodReturnInfo.moneyMadeByClient, space: false })}
+                          </Row>
+                          <Row type='flex' justify='center' align='middle'>
+                            <p className='period-gain-in-dollars'>
+                              + {formatDollars({ value: currentPeriodReturnInfo.moneyMadeByClient, space: false })}
+                            </p>
+                          </Row>
+                          <Row gutter={12}>
+                            <Col span={12}>
+                              <p className='period-timespan'>
+                                {moment(currentPeriodReturnInfo.periodStart.date).format('MM-DD-YYYY')}
                               </p>
                               <p className='stock-start-end'>
                                 {'Stock Start: '}
                                 {formatDollars({ value: currentPeriodReturnInfo.periodStart.close, space: false })}
-                                <br />
+                              </p>
+                            </Col>
+                            <Col span={12}>
+                              <p className='period-timespan'>
+                                {moment(currentPeriodReturnInfo.periodEnd.date).format('MM-DD-YYYY')}
+                              </p>
+                              <p className='stock-start-end'>
                                 {'Stock End: '}
                                 {formatDollars({ value: currentPeriodReturnInfo.periodEnd.close, space: false })}
                               </p>
@@ -167,16 +190,16 @@ export const ESPPProfitsDisplay = stateManagerContainer.withStateManagers({
                       ) : null;
 
                       const NUMBER_OF_CARDS_TO_COL_SPAN_MAP = {
-                        12: { span: 12, offset: 0 },
-                        4: { span: 12, offset: 0 },
-                        2: { span: 12, offset: 0 },
-                        1: { span: 20, offset: 2 },
+                        12: { lg: { span: 12, offset: 0 }, xs: { span: 24 } },
+                        4: { lg: { span: 12, offset: 0 }, xs: { span: 24 } },
+                        2: { lg: { span: 12, offset: 0 }, xs: { span: 24 } },
+                        1: { lg: { span: 20, offset: 2 }, xs: { span: 24 } },
                       };
 
                       const spanInfo = NUMBER_OF_CARDS_TO_COL_SPAN_MAP[numberOfCards];
 
                       return (
-                        <Col key={cardIdx} span={spanInfo.span} offset={spanInfo.offset}>
+                        <Col key={cardIdx} {...spanInfo}>
                           <Card className='espp-period-profits-card' loading={loadingStockData}>
                             <Card.Meta description={description} />
                           </Card>
