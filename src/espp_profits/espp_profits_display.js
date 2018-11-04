@@ -98,7 +98,7 @@ export const ESPPProfitsDisplay = stateManagerContainer.withStateManagers({
                     <p className='earnings'>
                       {formatDollars({ value: dollarsEarnedLastYear })}
                       <br />
-                      <img src={lastYearLineImageSrc} style={{ width: '180px' }} />
+                      <img alt={''} src={lastYearLineImageSrc} style={{ width: '180px' }} />
                     </p>
                     <p>
                       via your {companyName} ESPP by using <strong>Cake Financials</strong>

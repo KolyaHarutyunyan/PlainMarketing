@@ -22,6 +22,8 @@
 .methodology-card-container {
   background-color: #4ab4ff;
   padding-bottom: 47px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .methodology-card-container .text-container {

@@ -1,8 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import { Col, Icon, Row } from 'antd';
+import { InlineMath } from 'react-katex';
 
 import config from '../config';
 
+import 'katex/dist/katex.min.css';
 import './methodology_expander.css';
 
 const {
@@ -50,12 +52,15 @@ export const MethodologyExpander = stateManagerContainer.withStateManagers({
               opportunity.
             </p>
             <p>
-              The simplest ESPP calculation is done by multiplying your annual income (I) by the max contribution
-              percentage (P) by the total discount (D) and then dividing the profits by 2 to represent the subtraction
-              of Cake’s share of the profits. Where D = (dE: max ESPP discount) + (dL: discount from lookback, explained
-              below).
+              The simplest ESPP calculation is done by multiplying your annual income (<InlineMath>I</InlineMath>) by
+              the max contribution percentage (<InlineMath>P</InlineMath>) by the total discount (
+              <InlineMath>D</InlineMath>) and then dividing the profits by 2 to represent the subtraction of Cake’s
+              share of the profits. Where <InlineMath>D = dE + dL</InlineMath> where <InlineMath>dE</InlineMath> is max
+              ESPP discount and <InlineMath>dL</InlineMath> is discount from lookback, explained below.
             </p>
-            <p>This calculation looks like: (I*P*(dE+dL))/2.</p>
+            <p>
+              This calculation looks like: <InlineMath>(I*P*(dE+dL)) \over 2</InlineMath>.
+            </p>
             <p>
               If your ESPP program has a lookback provision it makes this calculation much more interesting, as you get
               to buy the stock at a discount below the LOWEST price between the stock price at the beginning of the
