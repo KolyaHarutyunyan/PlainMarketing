@@ -4,6 +4,7 @@ import * as R from 'ramda';
 import { Button, Col, DatePicker, Form, Icon, Input, InputNumber, Radio, Row, Tooltip, Spin, Select } from 'antd';
 import axios from 'axios';
 import validator from 'validator';
+import { isMobile } from 'react-device-detect';
 
 import filter from './filter';
 import './espp_details_collector.css';
@@ -77,7 +78,7 @@ export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
         <Fragment>
           <span>
             {`${label} `}
-            <Tooltip title={tooltip}>
+            <Tooltip title={tooltip} trigger={isMobile ? 'click' : 'hover'}>
               <Icon type='question-circle' theme='filled' />
             </Tooltip>
           </span>

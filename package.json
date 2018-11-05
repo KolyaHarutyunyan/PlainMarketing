@@ -9,6 +9,7 @@
     "ramda": "^0.25.0",
     "react": "^16.4.2",
     "react-bootstrap": "^0.32.1",
+    "react-device-detect": "^1.6.1",
     "react-dom": "^16.4.2",
     "react-katex": "^2.0.2",
     "react-mathjax-preview": "^0.1.10",
