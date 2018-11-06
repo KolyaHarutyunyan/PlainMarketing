@@ -22,7 +22,8 @@
     "build": "react-app-rewired build",
     "test": "react-app-rewired test --env=jsdom",
     "eject": "react-scripts eject",
-    "deploy": "aws s3 sync build/ s3://marketing.cakefinancials.com",
+    "deploy-staging": "aws s3 sync build/ s3://calculators-staging.cakefinancials.com --delete",
+    "deploy": "aws s3 sync build/ s3://calculators.cakefinancials.com --delete",
     "postdeploy": "aws cloudfront create-invalidation --distribution-id EGJJ6N1IZ6WYA --paths '/*'"
   },
   "devDependencies": {
