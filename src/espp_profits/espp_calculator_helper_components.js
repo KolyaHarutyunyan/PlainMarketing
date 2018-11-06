@@ -4,10 +4,10 @@ import { Icon, Tooltip } from 'antd';
 
 import './espp_calculator_helper_components.css';
 
-export const ESPPCalculatorTooltip = ({ tooltipText }) => {
+export const ESPPCalculatorTooltip = ({ tooltipText, child = null }) => {
   return (
     <Tooltip overlayClassName='espp-calculator-tooltip' title={tooltipText} trigger={isMobile ? 'click' : 'hover'}>
-      <Icon type='question-circle' theme='filled' />
+      {child === null ? <Icon type='question-circle' theme='filled' /> : child}
     </Tooltip>
   );
 };

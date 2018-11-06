@@ -37,21 +37,23 @@ const calculateESPPEarnings = ({
 }) => {
   const numberOfPeriods = MONTHS_IN_YEAR / periodCadenceInMonths;
   const contributionPerPeriod = (contributionPercentage * income) / numberOfPeriods;
-  let totalContributions = 0;
+  let totalIRSContributions = 0;
 
   const earnings = R.map(([ periodStart, periodEnd ]) => {
     const priceOfStock = periodEnd.close;
     const buyPriceOfStock = lookback ? Math.min(periodStart.close, periodEnd.close) : periodEnd.close;
 
-    const contributionThisPeriod =
-      totalContributions + contributionPerPeriod <= ESPP_MAX_CONTRIB_PER_YEAR
-        ? contributionPerPeriod
-        : ESPP_MAX_CONTRIB_PER_YEAR - totalContributions;
+    const maxStocksPurchasableWithIRSLimitThisPeriod = Math.floor(
+      (ESPP_MAX_CONTRIB_PER_YEAR - totalIRSContributions) / periodStart.close
+    );
 
-    totalContributions += contributionThisPeriod;
+    const contributionThisPeriod = contributionPerPeriod;
 
     const discountedPurchasePrice = (1 - discount) * buyPriceOfStock;
-    const stockBought = Math.floor(contributionThisPeriod / discountedPurchasePrice);
+    const stockBought = Math.min(
+      Math.floor(contributionThisPeriod / discountedPurchasePrice), // stocks we can buy normally
+      maxStocksPurchasableWithIRSLimitThisPeriod
+    );
     const moneyUsedToBuyStock = stockBought * discountedPurchasePrice;
     const unusedMoney = contributionThisPeriod - moneyUsedToBuyStock;
     const totalSalePrice = stockBought * priceOfStock;
@@ -61,6 +63,8 @@ const calculateESPPEarnings = ({
     const moneyMadeByClient = cashInBankAfterSale - amountToPayBack;
     const moneyMadeByCake = amountToPayBack - contributionThisPeriod;
 
+    totalIRSContributions += stockBought * periodStart.close;
+
     return {
       amountToPayBack,
       buyPriceOfStock,
@@ -68,7 +72,7 @@ const calculateESPPEarnings = ({
       contributionThisPeriod,
       discountedPurchasePrice,
       gain,
-      unusedMoney,
+      maxStocksPurchasableWithIRSLimitThisPeriod,
       moneyUsedToBuyStock,
       moneyMadeByCake,
       moneyMadeByClient,
@@ -77,6 +81,8 @@ const calculateESPPEarnings = ({
       priceOfStock,
       stockBought,
       totalSalePrice,
+      totalIRSContributions,
+      unusedMoney,
     };
   }, getDataForDates({ stockData, periodStartDate, periodCadenceInMonths }));
 

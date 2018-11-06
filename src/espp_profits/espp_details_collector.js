@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import * as R from 'ramda';
-import { Button, Col, DatePicker, Form, Input, InputNumber, Radio, Row, Tooltip, Spin, Select } from 'antd';
+import { Button, Col, DatePicker, Form, Input, InputNumber, Radio, Row, Spin, Select } from 'antd';
 import axios from 'axios';
 import validator from 'validator';
 import { ESPPCalculatorTooltip } from './espp_calculator_helper_components';
@@ -370,15 +370,16 @@ export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
                       </Col>
                     </Row>
                     <Row className='dont-know-espp-details-tooltip-container'>
-                      <Tooltip
-                        title={
+                      <ESPPCalculatorTooltip
+                        tooltipText={
                           'Sometimes these are publicly available, if not, try searching for ESPP or ESOP within your employee portal. Lastly, you can always inquire with your benefits and compensation department. There is no harm in trying some values now to get a ballpark estimate and then coming back to the tool with exact details once ready.'
                         }
-                      >
-                        <i>
-                          <a>{'What if I don\'t know my ESPP details?'}</a>
-                        </i>
-                      </Tooltip>
+                        child={
+                          <i>
+                            <a>{'What if I don\'t know my ESPP details?'}</a>
+                          </i>
+                        }
+                      />
                     </Row>
                   </Form>
                 </Col>
