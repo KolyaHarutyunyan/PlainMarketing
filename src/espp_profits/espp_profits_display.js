@@ -4,6 +4,7 @@ import { Button, Card, Col, Icon, Row, Spin } from 'antd';
 import axios from 'axios';
 import moment from 'moment';
 
+import { ESPPCalculatorTooltip } from './espp_calculator_helper_components';
 import config from '../config';
 import * as returnCalculator from '../lib/return_calculator';
 import { formatDollars } from '../lib/helpers';
@@ -72,7 +73,7 @@ export const ESPPProfitsDisplay = stateManagerContainer.withStateManagers({
 
       return (
         <Row className='return-info-summary-container'>
-          <Col sm={2} md={4}>
+          <Col sm={3}>
             <Button
               type='danger'
               className='go-back-button'
@@ -85,7 +86,7 @@ export const ESPPProfitsDisplay = stateManagerContainer.withStateManagers({
               Go Back
             </Button>
           </Col>
-          <Col sm={20} md={16}>
+          <Col sm={18}>
             {loadingStockData ? (
               <Card loading={true} style={{ maxWidth: '50%', margin: '0 auto' }}>
                 {' '}
@@ -120,6 +121,43 @@ export const ESPPProfitsDisplay = stateManagerContainer.withStateManagers({
       );
     }
 
+    getCardTooltipText(currentPeriodReturnInfo) {
+      const {
+        contributionThisPeriod,
+        stockBought,
+        priceOfStock,
+        buyPriceOfStock,
+        discountedPurchasePrice,
+      } = currentPeriodReturnInfo;
+
+      return (
+        <Fragment>
+          <span>Cash withheld: {formatDollars({ value: contributionThisPeriod, space: false })}</span>
+          <br />
+          <span>Stock Purchase Price: {formatDollars({ value: buyPriceOfStock, space: false })}</span>
+          <br />
+          <span>Discounted Price: {formatDollars({ value: discountedPurchasePrice, space: false })}</span>
+          <br />
+          <span>Shares purchased: {stockBought}</span>
+          <br />
+          <span>
+            Profit Per Share: {formatDollars({ value: priceOfStock - discountedPurchasePrice, space: false })}
+          </span>
+          <br />
+          <span>
+            Total Profit:{' '}
+            {formatDollars({ value: stockBought * (priceOfStock - discountedPurchasePrice), space: false })}
+          </span>
+          <br />
+          <span>
+            Your Share:{' '}
+            {formatDollars({ value: 0.5 * stockBought * (priceOfStock - discountedPurchasePrice), space: false })}
+          </span>
+          <br />
+        </Fragment>
+      );
+    }
+
     render() {
       const loadingStockData = this.stockDataStateManager.isLoading();
 
@@ -140,7 +178,7 @@ export const ESPPProfitsDisplay = stateManagerContainer.withStateManagers({
           <Spin spinning={loadingStockData}>
             {this.renderReturnInfoSummaryArea()}
             <Row className='period-returns-summary-container'>
-              <Col sm={{ span: 20, offset: 2 }} lg={{ span: 16, offset: 4 }}>
+              <Col className='summary-card-container-column' sm={{ span: 20, offset: 2 }} lg={{ span: 16, offset: 4 }}>
                 {R.addIndex(R.map)(
                   (groupOfCols, key) => (
                     <Row key={key} gutter={32}>
@@ -154,6 +192,9 @@ export const ESPPProfitsDisplay = stateManagerContainer.withStateManagers({
 
                       const description = !R.isNil(returnInfo) ? (
                         <Fragment>
+                          <div className='card-tooltip-container'>
+                            <ESPPCalculatorTooltip tooltipText={this.getCardTooltipText(currentPeriodReturnInfo)} />
+                          </div>
                           <Row type='flex' justify='center' align='middle'>
                             <Col>
                               <p className='period-label'>

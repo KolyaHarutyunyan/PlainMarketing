@@ -63,7 +63,13 @@ export default class Home extends Component {
           {this.state.doneCollectingData ? (
             <ESPPProfitsDisplay goBack={() => this.setState({ doneCollectingData: false })} />
           ) : (
-            <ESPPDetailsCollector doneCollectingData={() => this.setState({ doneCollectingData: true })} />
+            <ESPPDetailsCollector
+              doneCollectingData={() => {
+                // scroll to top
+                window.scrollTo(0, 0);
+                this.setState({ doneCollectingData: true });
+              }}
+            />
           )}
           <MethodologyExpander />
         </div>

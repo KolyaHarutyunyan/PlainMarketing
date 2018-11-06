@@ -1,10 +1,10 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import moment from 'moment';
 import * as R from 'ramda';
-import { Button, Col, DatePicker, Form, Icon, Input, InputNumber, Radio, Row, Tooltip, Spin, Select } from 'antd';
+import { Button, Col, DatePicker, Form, Input, InputNumber, Radio, Row, Tooltip, Spin, Select } from 'antd';
 import axios from 'axios';
 import validator from 'validator';
-import { isMobile } from 'react-device-detect';
+import { ESPPCalculatorTooltip } from './espp_calculator_helper_components';
 
 import filter from './filter';
 import './espp_details_collector.css';
@@ -75,14 +75,10 @@ export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
 
     renderFormLabelWithTooltip({ label, tooltip }) {
       return (
-        <Fragment>
-          <span>
-            {`${label} `}
-            <Tooltip title={tooltip} trigger={isMobile ? 'click' : 'hover'}>
-              <Icon type='question-circle' theme='filled' />
-            </Tooltip>
-          </span>
-        </Fragment>
+        <span>
+          {`${label} `}
+          <ESPPCalculatorTooltip tooltipText={tooltip} />
+        </span>
       );
     }
 
