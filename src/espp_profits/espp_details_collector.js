@@ -154,7 +154,10 @@ export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
             <Row type='flex' justify='center'>
               <Col span={15}>
                 <p>
-                  Created by <strong>Cake Financials</strong>
+                  {'Created by '}
+                  <a href='http://cakefinancials.com/get-started/' rel='noopener noreferrer' target='_blank'>
+                    <strong>Cake Financials</strong>
+                  </a>
                 </p>
                 <p>
                   How much money can you make with your company’s Employee Stock Purchase Plan? We built this calculator

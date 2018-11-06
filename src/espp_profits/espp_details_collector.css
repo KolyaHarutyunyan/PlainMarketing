@@ -15,6 +15,10 @@
   background: #ffffff;
 }
 
+.espp-details-collector-container .header-description-container a {
+  color: #ffffff;
+}
+
 .espp-details-collector-container .header-description-container {
   text-align: center;
   font-size: 14px;
