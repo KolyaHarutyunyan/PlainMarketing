@@ -24,7 +24,7 @@
     "eject": "react-scripts eject",
     "deploy-staging": "aws s3 sync build/ s3://calculators-staging.cakefinancials.com --delete",
     "deploy": "aws s3 sync build/ s3://calculators.cakefinancials.com --delete",
-    "postdeploy": "aws cloudfront create-invalidation --distribution-id EGJJ6N1IZ6WYA --paths '/*'"
+    "postdeploy": "aws cloudfront create-invalidation --distribution-id E36ESSAEOVI2LP --paths '/*'"
   },
   "devDependencies": {
     "babel-plugin-import": "^1.9.1",
