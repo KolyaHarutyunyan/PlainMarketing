@@ -84,7 +84,7 @@ window.brianLuscombeIsAWanker = () => {
   const esppInputs = esppProfitsModelInputsStateManager.getData();
 
   const evolvedInputs = R.evolve(ESPP_INPUTS_URL_WRITE_EVOLVERS, esppInputs);
-  const url = `${window.location.host}/espp?${queryString.stringify(evolvedInputs)}`;
+  const url = `${window.location.protocol}//${window.location.host}/espp?${queryString.stringify(evolvedInputs)}`;
   console.log(url);
 };
 

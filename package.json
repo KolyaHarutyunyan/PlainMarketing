@@ -23,6 +23,7 @@
     "test": "react-app-rewired test --env=jsdom",
     "eject": "react-scripts eject",
     "deploy-staging": "aws s3 sync build/ s3://calculators-staging.cakefinancials.com --delete",
+    "postdeploy-staging": "aws cloudfront create-invalidation --distribution-id E32KHDTPW8WQ02 --paths '/*'",
     "deploy": "aws s3 sync build/ s3://calculators.cakefinancials.com --delete",
     "postdeploy": "aws cloudfront create-invalidation --distribution-id E36ESSAEOVI2LP --paths '/*'"
   },
