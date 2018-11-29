@@ -46,19 +46,6 @@ stateManagerContainer.getStateManager({ name: STATE_MANAGER_NAMES.COMPANY_INFO }
   };
 });
 
-stateManagerContainer.getStateManager({ name: STATE_MANAGER_NAMES.ESPP_PROFITS_MODEL_INPUTS }).syncUpdate({
-  contributionPercentage: 0.15,
-  company: undefined,
-  email: '',
-  discount: 0.15,
-  income: 60000,
-  lookback: true,
-  periodStartDate: moment()
-    .add(-1, 'years')
-    .add(-1, 'weeks'),
-  periodCadenceInMonths: 3,
-});
-
 export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
   stateManagerNames: [ STATE_MANAGER_NAMES.COMPANY_INFO, STATE_MANAGER_NAMES.ESPP_PROFITS_MODEL_INPUTS ],
   WrappedComponent: class ESPPDetailsCollector extends Component {
@@ -97,7 +84,7 @@ export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
 
       return (
         <Select
-          defaultValue={symbolDisplayNames[esppProfitsModel.company]}
+          defaultValue={esppProfitsModel.company}
           defaultActiveFirstOption={false}
           filterOption={false}
           notFoundContent={null}
@@ -107,13 +94,23 @@ export const ESPPDetailsCollector = stateManagerContainer.withStateManagers({
           showArrow={true}
           showSearch
         >
-          {R.map(({ symbol }) => {
-            return (
-              <Select.Option key={symbol} value={symbol}>
-                {symbolDisplayNames[symbol]}
-              </Select.Option>
-            );
-          }, filteredCompanies)}
+          {(() => {
+            if (!this.state.companySearchValue && esppProfitsModel.company) {
+              return (
+                <Select.Option key={esppProfitsModel.company} value={esppProfitsModel.company}>
+                  {symbolDisplayNames[esppProfitsModel.company]}
+                </Select.Option>
+              );
+            } else {
+              return R.map(({ symbol }) => {
+                return (
+                  <Select.Option key={symbol} value={symbol}>
+                    {symbolDisplayNames[symbol]}
+                  </Select.Option>
+                );
+              }, filteredCompanies);
+            }
+          })()}
         </Select>
       );
     }
